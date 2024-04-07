@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { COLOR } from '../utils/color';
 
 interface ButtonProps {
     buttonText: string;
@@ -15,7 +16,7 @@ const Button: React.FC<ButtonProps> = ({ buttonText }) => {
 
 const styles = StyleSheet.create({
     touchop: {
-        backgroundColor: '#183059',
+        backgroundColor: COLOR.blue,
         width: '80%',
         height: '7%',
         alignItems: 'center',
