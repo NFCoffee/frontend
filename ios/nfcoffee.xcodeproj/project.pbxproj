@@ -14,6 +14,11 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7699B88040F8A987B510C191 /* libPods-nfcoffee-nfcoffeeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-nfcoffee-nfcoffeeTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		60B9A38E9688497C8EC502CE /* SeoulNamsanB.otf in Resources */ = {isa = PBXBuildFile; fileRef = 02CD5849590F4C7D8B89B51D /* SeoulNamsanB.otf */; };
+		67348F3172024F9B83DAD9E4 /* SeoulNamsanEB.otf in Resources */ = {isa = PBXBuildFile; fileRef = A35AE5DC655349FEAA7AC4D9 /* SeoulNamsanEB.otf */; };
+		B617DF735BF34040A0298049 /* SeoulNamsanL.otf in Resources */ = {isa = PBXBuildFile; fileRef = 895EBD4472CB42158246946A /* SeoulNamsanL.otf */; };
+		8314F9FC6BBD489FA94BD06E /* SeoulNamsanM.otf in Resources */ = {isa = PBXBuildFile; fileRef = 32276CB0D5F446238EA370C9 /* SeoulNamsanM.otf */; };
+		81C652706CC644AC8B560D9E /* SeoulNamsanvert.otf in Resources */ = {isa = PBXBuildFile; fileRef = 252ABA47C3FC4ADBA12029C5 /* SeoulNamsanvert.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +49,11 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = nfcoffee/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-nfcoffee-nfcoffeeTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nfcoffee-nfcoffeeTests.release.xcconfig"; path = "Target Support Files/Pods-nfcoffee-nfcoffeeTests/Pods-nfcoffee-nfcoffeeTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		02CD5849590F4C7D8B89B51D /* SeoulNamsanB.otf */ = {isa = PBXFileReference; name = "SeoulNamsanB.otf"; path = "../src/assets/fonts/SeoulNamsanB.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A35AE5DC655349FEAA7AC4D9 /* SeoulNamsanEB.otf */ = {isa = PBXFileReference; name = "SeoulNamsanEB.otf"; path = "../src/assets/fonts/SeoulNamsanEB.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		895EBD4472CB42158246946A /* SeoulNamsanL.otf */ = {isa = PBXFileReference; name = "SeoulNamsanL.otf"; path = "../src/assets/fonts/SeoulNamsanL.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		32276CB0D5F446238EA370C9 /* SeoulNamsanM.otf */ = {isa = PBXFileReference; name = "SeoulNamsanM.otf"; path = "../src/assets/fonts/SeoulNamsanM.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		252ABA47C3FC4ADBA12029C5 /* SeoulNamsanvert.otf */ = {isa = PBXFileReference; name = "SeoulNamsanvert.otf"; path = "../src/assets/fonts/SeoulNamsanvert.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +132,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				017378B8F3DF4DF09A4F5A99 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -147,6 +158,19 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
+		};
+		017378B8F3DF4DF09A4F5A99 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				02CD5849590F4C7D8B89B51D /* SeoulNamsanB.otf */,
+				A35AE5DC655349FEAA7AC4D9 /* SeoulNamsanEB.otf */,
+				895EBD4472CB42158246946A /* SeoulNamsanL.otf */,
+				32276CB0D5F446238EA370C9 /* SeoulNamsanM.otf */,
+				252ABA47C3FC4ADBA12029C5 /* SeoulNamsanvert.otf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -243,6 +267,11 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				60B9A38E9688497C8EC502CE /* SeoulNamsanB.otf in Resources */,
+				67348F3172024F9B83DAD9E4 /* SeoulNamsanEB.otf in Resources */,
+				B617DF735BF34040A0298049 /* SeoulNamsanL.otf in Resources */,
+				8314F9FC6BBD489FA94BD06E /* SeoulNamsanM.otf in Resources */,
+				81C652706CC644AC8B560D9E /* SeoulNamsanvert.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -544,7 +573,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -572,6 +601,7 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -579,7 +609,13 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -616,7 +652,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -636,6 +672,7 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -643,7 +680,13 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
