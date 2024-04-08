@@ -1,22 +1,26 @@
 import React from "react";
-import Button from "../components/Button";
 import { StyleSheet, View } from "react-native";
+import BasicScreen from "../components/BasicScreen";
+import Button from "../components/Button";
 
 export default function LoginScreen() {
   return (
-    <>
-      <View style={styles.container}>
-        <Button buttonText="로그인"/>
-        <Button buttonText="회원가입"/>
+    <BasicScreen>
+      <View style={styles.content}>
+        <Button buttonText="로그인" style={styles.button} />
       </View>
-    </> 
-  )
+    </BasicScreen>
+  );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  content: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    flex: 1
-  }
+    width: '70%'
+  },
+  button: {
+    // width: '100%',
+  },
 });

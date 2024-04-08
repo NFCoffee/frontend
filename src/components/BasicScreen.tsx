@@ -2,28 +2,40 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { COLOR } from "../utils/color";
 
-export default function BasicScreen() {
-    return (
-        <View style={styles.container}>
-            <View style={styles.box}/>
-        </View>
-    )
+interface BasicScreenProps {
+  children?: React.ReactNode;
 }
 
+const BasicScreen: React.FC<BasicScreenProps> = ({ children }) => {
+  return (
+    <View style={styles.container}>
+      <View style={styles.background} />
+      <View style={styles.box} />
+      {children}
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
-    container: {
-      backgroundColor: COLOR.background,
-      width: '100%',
-      height: '100%',
-      alignItems: 'center',
-    },
-    box: {
-        position: 'absolute',
-        top: 320,
-        backgroundColor: '#ffffff',
-        width: 330,
-        height: 400,
-        borderRadius: 8
-    }
-  });
-  
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  background: {
+    backgroundColor: COLOR.background,
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+  },
+  box: {
+    position: "absolute",
+    top: "40%",
+    backgroundColor: "#ffffff",
+    width: "85%",
+    height: "45%",
+    borderRadius: 8,
+  },
+});
+
+export default BasicScreen;
