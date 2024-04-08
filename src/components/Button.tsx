@@ -1,14 +1,15 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { COLOR } from '../utils/color';
 
 interface ButtonProps {
     buttonText: string;
+    style?: object; // Add style prop to ButtonProps
 }
 
-const Button: React.FC<ButtonProps> = ({ buttonText }) => {
+const Button: React.FC<ButtonProps> = ({ buttonText, style }) => {
     return (
-        <TouchableOpacity style={styles.touchop}>
+        <TouchableOpacity style={[styles.touchop, style]}>
             <Text style={styles.text}>{buttonText}</Text>
         </TouchableOpacity>
     );
@@ -17,18 +18,18 @@ const Button: React.FC<ButtonProps> = ({ buttonText }) => {
 const styles = StyleSheet.create({
     touchop: {
         backgroundColor: COLOR.blue,
-        width: '80%',
-        height: '7%',
+        width: '100%',
+        height: 50,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 8,
-        margin: 10
+        margin: 10,
     },
     text: {
         fontFamily: 'SeoulNamsanB',
         fontSize: 22,
-        color: 'white'
-    }
+        color: 'white',
+    },
 });
 
 export default Button;
