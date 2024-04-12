@@ -1,6 +1,6 @@
 // Button.tsx
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, ViewStyle, Dimensions } from 'react-native';
 import { COLOR } from '../utils/color';
 
 interface ButtonProps {
@@ -10,8 +10,18 @@ interface ButtonProps {
 }
 
 const Button: React.FC<ButtonProps> = ({ buttonText, style, onPress }) => {
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
+
   return (
-    <TouchableOpacity style={[styles.touchop, style]} onPress={onPress}>
+    <TouchableOpacity style={[
+        styles.touchop,
+        {
+          width: windowWidth * 0.75, // 80% of window width
+          height: windowHeight * 0.065, // 6.5% of window height
+        },
+        style,
+      ]} onPress={onPress}>
       <Text style={styles.text}>{buttonText}</Text>
     </TouchableOpacity>
   );

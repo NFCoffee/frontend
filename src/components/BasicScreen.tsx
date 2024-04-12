@@ -1,10 +1,13 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Dimensions } from "react-native";
 import { COLOR } from "../utils/color";
 
 interface BasicScreenProps {
   children?: React.ReactNode;
 }
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 const BasicScreen: React.FC<BasicScreenProps> = ({ children }) => {
   return (
@@ -24,16 +27,16 @@ const styles = StyleSheet.create({
   },
   background: {
     backgroundColor: COLOR.background,
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '150%',
     position: "absolute",
   },
   box: {
     position: "absolute",
-    top: "40%",
+    top: '40%',
     backgroundColor: "#ffffff",
-    width: "85%",
-    height: "45%",
+    width: '85%',
+    height: '45%',
     borderRadius: 8,
   },
 });
