@@ -17,7 +17,7 @@ export default function PrivateKeyScreen() {
     <BasicScreen>
       <View style={styles.content}>
         <Text style={styles.text}>⚠Private Key는 반드시 기록하세요!⚠</Text>
-        <Text style={{fontSize: 14, marginTop: 6}}>private key 자리</Text>
+        <Text style={{fontSize: 14, marginTop: 9}}>private key 자리</Text>
         <Button buttonText="키 복사" style={styles.loginButton} onPress={handleCopyKey} />
         {isButtonClicked ? <Button buttonText="완료" style={styles.buttonClicked}/> : <Button buttonText="완료" style={styles.submitButton}/>}
       </View>
