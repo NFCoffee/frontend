@@ -15,7 +15,7 @@ const Block: React.FC<BlockProps> = ({ type, text1, text2, text3, color = COLOR.
         <View style={styles.container}>
             <View style={[styles.line, { backgroundColor: color }]} />
             <View style={styles.content}>
-                <Text>{text1}</Text>
+                <Text style={{fontFamily: "SeoulNamsanB", fontSize: 20}}>{text1}</Text>
                 {type === "transaction" && (
                 <>
                 <Text>{text2}</Text>
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         flexDirection: "row",
-        justifyContent: 'space-between',
+        justifyContent: 'space-between'
     },
 });
 

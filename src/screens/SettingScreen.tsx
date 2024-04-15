@@ -10,15 +10,23 @@ export default function SettingScreen() {
                 <Text style={styles.text}>설정</Text>
                 <Block
                 type="setting"
-                text1="Transaction 1"
+                text1="도움말 / 소개"
                 />
                 <Block
                 type="setting"
-                text1="Transaction 1"
+                text1="언어"
                 />
                 <Block
                 type="setting"
-                text1="Transaction 1"
+                text1="다크모드"
+                />
+                <Block
+                type="setting"
+                text1="block explorer 이동"
+                />
+                <Block
+                type="setting"
+                text1="로그아웃"
                 />
             </SafeAreaView>
         </View>
