@@ -12,20 +12,24 @@ interface BlockProps {
 
 const Block: React.FC<BlockProps> = ({ type, text1, text2, text3, color = COLOR.dark }) => {
     return (
-        <View style={styles.container}>
-            <View style={[styles.line, { backgroundColor: color }]} />
-            <View style={styles.content}>
-                <Text style={{fontFamily: "SeoulNamsanB", fontSize: 20}}>{text1}</Text>
-                {type === "transaction" && (
-                <>
-                <Text>{text2}</Text>
-                <Text>{text3}</Text>
-                </>
-                )}
-            </View>
+      <View style={styles.container}>
+        <View style={[styles.line, { backgroundColor: color }]} />
+  
+        <View style={styles.content}>
+          <Text style={{ fontFamily: "SeoulNamsanB", fontSize: 20 }}>{text1}</Text>
+          {type === "transaction" && (
+            <>
+              <Text style={{ fontFamily: "SeoulNamsanB", fontSize: 15, color: COLOR.lightblue }}>
+                {text2}
+              </Text>
+            </>
+          )}
         </View>
+  
+        {text3 && <Text style={{ fontFamily: "SeoulNamsanB", fontSize: 20, paddingRight: '3%' }}>{text3}</Text>}
+      </View>
     );
-};
+  };
 
 const styles = StyleSheet.create({
     container: {
@@ -33,7 +37,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginBottom: '1%',
         height: 70,
-        backgroundColor: "#ffffff"
+        backgroundColor: "#ffffff",
     },
     line: {
         width: '2%',
@@ -42,8 +46,7 @@ const styles = StyleSheet.create({
     },
     content: {
         flex: 1,
-        flexDirection: "row",
-        justifyContent: 'space-between'
+        paddingLeft: '2%',
     },
 });
 
