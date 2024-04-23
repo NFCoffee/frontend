@@ -8,7 +8,7 @@ export default function TransactionScreen() {
         <View style={styles.container}>
             <SafeAreaView style={{alignItems: "center"}}>
                 <Text style={styles.text}>트랜잭션 기록</Text>
-                <ScrollView style={{width: "100%", height: '70%'}}>
+                <ScrollView style={{width: "100%", height: '65%'}}>
                 <Block
                 type="transaction"
                 text1="Transaction 1"
@@ -43,6 +43,27 @@ export default function TransactionScreen() {
                 text2="Transaction 2"
                 text3="Transaction 3"
                 color={COLOR.lightblue}
+                />
+                <Block
+                type="transaction"
+                text1="Transaction 1"
+                text2="Transaction 2"
+                text3="Transaction 3"
+                color={COLOR.lightblue}
+                />
+                <Block
+                type="transaction"
+                text1="Transaction 1"
+                text2="Transaction 2"
+                text3="Transaction 3"
+                color={COLOR.lightblue}
+                />
+                <Block
+                type="transaction"
+                text1="Transaction 1"
+                text2="Transaction 2"
+                text3="Transaction 3"
+                color={COLOR.blue}
                 />
                 </ScrollView>
             </SafeAreaView>

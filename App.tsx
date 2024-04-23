@@ -2,13 +2,19 @@ import React from "react";
 import PrivateKeyScreen from "./src/screens/PrivateKeyScreen";
 import NFTScreen from "./src/screens/NFTScreen";
 import MainScreen from "./src/screens/MainScreen";
+import TransactionScreen from "./src/screens/TransactionScreen";
+import SettingScreen from "./src/screens/SettingScreen";
+import OrderScreen from "./src/screens/OrderScreen";
 
 export default function App() {
   return (
     <>
       {/* <PrivateKeyScreen/> */}
       {/* <NFTScreen/> */}
-      <MainScreen/>
+      {/* <MainScreen/> */}
+      {/* <TransactionScreen/> */}
+      {/* <SettingScreen/> */}
+      <OrderScreen/>
     </> 
   )
 }

@@ -3,6 +3,8 @@ import { COLOR } from "../utils/color";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import Button from "../components/Button";
 
+const token: number = 0;
+
 export default function MainScreen() {
     return (
         <View style={styles.container}>
@@ -10,29 +12,37 @@ export default function MainScreen() {
                 <View style={styles.innerContainer}>
                     <Text style={styles.text}>NFCOFFEE</Text>
                     <View style={styles.tokenBox}>
-                        <View style={styles.textContainer}>
-                            <Text>이지인님</Text>
-                            <Text>잔여 토큰 | (토큰 수) PLZ</Text>
+                        <View>
+                            <Text style={{ fontFamily: 'SeoulNamsan' }}>이지인님</Text>
+                            <Text style={{marginTop: '2%', fontSize: 18, fontFamily: 'SeoulNamsanEB'}}>잔여 토큰 | {token} PLZ</Text>
                         </View>
                         <Button buttonText={"오늘의 토큰"} 
                         style={{width: '40%', height: '100%'}} 
                         onPress={()=>{}}/>
                     </View>
                     <View style={styles.quickOrder}>
-                        <Text>퀵 오더</Text>
-                        <Text>주문량 1위</Text>
-                        <Text>주문량 2위</Text>
-                        <Text>주문량 3위</Text>
-                        <Text>주문량 4위</Text>
-                        <Button buttonText="주문하기" style={styles.wideButtons}/>
+                        <View style={styles.quickOrderText}>
+                            <Text style={styles.mainText}>퀵 오더</Text>
+                            <Text style={styles.smallText}>주문량 1위</Text>
+                            <Text style={styles.smallText}>주문량 2위</Text>
+                            <Text style={styles.smallText}>주문량 3위</Text>
+                            <Text style={styles.smallText}>주문량 4위</Text>
+                        </View>
+                        <Button buttonText="주문하기"
+                        style={styles.wideButtons}
+                        onPress={()=>{}}/>
                     </View>
                     <View style={styles.quickOrder}>
-                        <Text>트랜잭션 기록</Text>
-                        <Text>트랜잭션 최근순 첫번째</Text>
-                        <Text>트랜잭션 최근순 두번째</Text>
-                        <Text>트랜잭션 최근순 세번째</Text>
-                        <Text>트랜잭션 최근순 네번째</Text>
-                        <Button buttonText="자세히 보기" style={styles.wideButtons}/>
+                        <View style={styles.quickOrderText}>
+                            <Text style={styles.mainText}>트랜잭션 기록</Text>
+                            <Text style={styles.smallText}>트랜잭션 최근순 첫번째</Text>
+                            <Text style={styles.smallText}>트랜잭션 최근순 두번째</Text>
+                            <Text style={styles.smallText}>트랜잭션 최근순 세번째</Text>
+                            <Text style={styles.smallText}>트랜잭션 최근순 네번째</Text>
+                        </View>
+                        <Button buttonText="자세히 보기"
+                        style={styles.wideButtons}
+                        onPress={()=>{}}/>
                     </View>
                 </View>
             </SafeAreaView>
@@ -44,7 +54,7 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: COLOR.background,
         width: '100%',
-        height: '100%'
+        height: '100%',
     },
     text: {
         color: COLOR.brown,
@@ -67,15 +77,11 @@ const styles = StyleSheet.create({
         marginTop: '5%',
         padding: '4%'
     },
-    textContainer: {
-        flex: 1, // Take remaining space
-    },
     quickOrder: {
         backgroundColor: "#ffffff",
         height: '55%',
         borderRadius: 16,
         marginTop: '8%',
-        // padding: '4%'
     },
     wideButtons: {
         width: '100%', 
@@ -83,5 +89,18 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 0, 
         position: "absolute", 
         bottom: 0,
+    },
+    quickOrderText: {
+        padding: '4%',
+    },
+    mainText: {
+        fontSize: 25, 
+        fontFamily: 'SeoulNamsanB'
+    },
+    smallText: {
+        fontSize: 14, 
+        fontFamily: 'SeoulNamsanB',
+        marginTop: '3%',
+        marginLeft: '5%'
     }
 })
