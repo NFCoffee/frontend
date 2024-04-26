@@ -30,8 +30,12 @@ export default function OrderScreen() {
                     </ScrollView>                    
                 </View>
                 <View style={styles.cart}>
-                    <Text style={[styles.text, {fontSize: 18, marginTop: "3%"}]}>장바구니</Text>
-                    <Button buttonText="주문하기" />
+                    <Text style={[styles.text, {fontSize: 20, marginTop: "3%"}]}>장바구니</Text>
+                    <View style={styles.cartItems}>
+                        <Text style={[styles.text, styles.cartItem]}>품목1</Text>
+                        <Text style={[styles.text, styles.cartItem]}>품목2</Text>
+                    </View>
+                    <Button buttonText="주문하기" style={{bottom: -30}}/>
                 </View>
             </SafeAreaView>
         </View>
@@ -53,7 +57,7 @@ const styles = StyleSheet.create({
     },
     box: {
         backgroundColor: "#ffffff",
-        marginTop: "10%",
+        marginTop: "7%",
         width: '85%',
         height: '50%',
         borderRadius: 16
@@ -64,5 +68,13 @@ const styles = StyleSheet.create({
         marginTop: '6%',
         backgroundColor: "#ffffff",
         alignItems: 'center',
-    }
+    },
+    cartItems: {
+        alignSelf: 'flex-start',
+    },
+    cartItem: {
+        fontSize: 17,
+        marginTop: "1%",
+        marginLeft: "6%",
+    },
 })
