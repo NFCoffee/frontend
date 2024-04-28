@@ -35,8 +35,8 @@ export default function OrderScreen() {
                         <Text style={[styles.text, styles.cartItem]}>품목1</Text>
                         <Text style={[styles.text, styles.cartItem]}>품목2</Text>
                     </View>
-                    <Button buttonText="주문하기" style={{bottom: -30}}/>
                 </View>
+                <Button buttonText="주문하기" style={styles.button}/>
             </SafeAreaView>
         </View>
     )
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     },
     box: {
         backgroundColor: "#ffffff",
-        marginTop: "7%",
+        marginTop: "5%",
         width: '85%',
         height: '50%',
         borderRadius: 16
@@ -77,4 +77,8 @@ const styles = StyleSheet.create({
         marginTop: "1%",
         marginLeft: "6%",
     },
+    button: {
+        bottom: '11%',
+        position: 'absolute',
+    }
 })
