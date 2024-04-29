@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
         color: COLOR.dark,
         fontSize: 35,
         marginTop: "5%",
-        marginBottom: "5%",
+        marginBottom: "4%",
         fontFamily: "SeoulNamsanB"
     },
     box: {
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
         marginLeft: "6%",
     },
     button: {
-        bottom: '11%',
+        bottom: '12%',
         position: 'absolute',
     }
 })
