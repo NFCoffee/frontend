@@ -4,6 +4,7 @@ import BasicScreen from "../components/BasicScreen";
 import Button from "../components/Button";
 import { COLOR } from "../utils/color";
 import InputField from "../components/InputField";
+import Logo from '../assets/images/planzLogo.png'
 
 const windowHeight = Dimensions.get('window').height;
 export default function LoginScreen() {
@@ -14,13 +15,15 @@ export default function LoginScreen() {
     </View>
     <BasicScreen>
       <View style={styles.content}>
+        <Image source={Logo} style={styles.imgStyle} />
         <InputField placeholder="private key 입력" defaultValue="" style={styles.inputField} />
         <Button buttonText="로그인" style={styles.button} />
         <Button buttonText="회원가입" style={styles.button} />
       </View>
     </BasicScreen>
     <TouchableOpacity style={styles.bottomButton} onPress={() => {}}>
-        <Text style={styles.bottomButtonText}>이용약관 동의하기</Text>
+        <Text style={styles.bottomButtonText}>private key 분실신고</Text>
+        <View style={styles.bottomButtonUnderline} />
     </TouchableOpacity>
     </>
   );
@@ -45,16 +48,18 @@ const styles = StyleSheet.create({
     top: windowHeight * 0.25,
   },
   imgStyle: {
-    width: '50%',
-    height: '50%',
+    width: '25%',
+    height: '15%',
+    bottom: windowHeight * 0.09,
   },
   button: {
     width: '100%',
-    marginBottom: 20,
+    marginBottom: '10%',
+    bottom: windowHeight * 0.04,
   },
   inputField: {
     width: '100%',
-    marginBottom: 20,
+    bottom: windowHeight * 0.07,
   },
   bottomButton : {
     alignItems: 'center',
@@ -63,5 +68,14 @@ const styles = StyleSheet.create({
     color: COLOR.dark,
     fontSize: 16,
     fontWeight: 'bold',
+    marginBottom: '4%',
+    bottom: windowHeight * 0.04
+  },
+  bottomButtonUnderline: {
+    width: '37%',
+    position: 'absolute',
+    borderBottomColor: COLOR.dark,
+    borderBottomWidth: 1,
+    bottom: windowHeight * 0.055,
   }
 });
