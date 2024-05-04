@@ -20,8 +20,11 @@ export default function App() {
       {/* <TransactionScreen/> */}
       {/* <SettingScreen/> */}
       {/* <MembershipScreen/> */}
-      <CertificationNumScreen/>
+      {/* <CertificationNumScreen/> */}
       {/* <LostKeyScreen/> */}
+      {/* <PaymentScreen/> */}
+      {/* <OrderScreen/> */}
+      <LoginScreen/>
     </>
   )
 }
