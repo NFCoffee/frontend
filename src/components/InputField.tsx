@@ -1,22 +1,20 @@
 import { COLOR } from '../utils/color';
 import React from 'react';
-import { View, TextInput, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { View, TextInput, StyleSheet, StyleProp, ViewStyle, TextInputProps } from 'react-native';
 
-interface InputFieldProps {
-  placeholder?: string;
-  defaultValue?: string;
+interface InputFieldProps extends TextInputProps {
   style?: StyleProp<ViewStyle>;
 }
 
 const InputField: React.FC<InputFieldProps> = (props) => {
-  const { placeholder, defaultValue, style } = props;
+  const { style, ...otherProps } = props;
   
   return (
     <View style={[styles.textInputWrapper, style]}>
       <TextInput
         style={styles.textInput}
-        placeholder={placeholder}
-        defaultValue={defaultValue}
+        placeholderTextColor="#888"
+        {...otherProps}
       />
     </View>
   );

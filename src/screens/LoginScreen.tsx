@@ -20,7 +20,7 @@ export default function LoginScreen() {
       </View>
     </BasicScreen>
     <TouchableOpacity style={styles.bottomButton} onPress={() => {}}>
-        <Text style={styles.bottomButtonText}>이용약관 동의하기</Text>
+        <Text style={styles.bottomButtonText}>private key 분실신고</Text>
     </TouchableOpacity>
     </>
   );
@@ -63,5 +63,7 @@ const styles = StyleSheet.create({
     color: COLOR.dark,
     fontSize: 16,
     fontWeight: 'bold',
+    textDecorationLine: 'underline',
+    marginBottom: '10%',
   }
 });
