@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     retryButton: {
         marginTop: '10%',
         marginBottom: '21%',
-        top: windowHeight * 0.1,
+        top: windowHeight * 0.08,
     },
     retryText: {
         fontFamily: 'SeoulNamsanB',

@@ -19,8 +19,8 @@ export default function App() {
       {/* <MainScreen/> */}
       {/* <TransactionScreen/> */}
       {/* <SettingScreen/> */}
-      <MembershipScreen/>
-      {/* <CertificationNumScreen/> */}
+      {/* <MembershipScreen/> */}
+      <CertificationNumScreen/>
       {/* <LostKeyScreen/> */}
     </>
   )
