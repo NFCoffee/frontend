@@ -5,6 +5,7 @@ import MainScreen from "./src/screens/MainScreen";
 import TransactionScreen from "./src/screens/TransactionScreen";
 import SettingScreen from "./src/screens/SettingScreen";
 import OrderScreen from "./src/screens/OrderScreen";
+import PaymentScreen from "./src/screens/PaymentScreen";
 
 export default function App() {
   return (
@@ -14,7 +15,8 @@ export default function App() {
       {/* <MainScreen/> */}
       {/* <TransactionScreen/> */}
       {/* <SettingScreen/> */}
-      <OrderScreen/>
+      {/* <OrderScreen/> */}
+      <PaymentScreen/>
     </> 
   )
 }
