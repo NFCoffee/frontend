@@ -7,6 +7,7 @@ import Button from "../components/Button";
     return (
       <View style={styles.container}>
         <SafeAreaView style={{ alignItems: "center", height: "100%" }}>
+          <Text>결제가 완료되었습니다.</Text>
           <Button buttonText="확인" style={styles.button} />
         </SafeAreaView>
       </View>
