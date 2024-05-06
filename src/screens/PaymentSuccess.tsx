@@ -7,7 +7,7 @@ import Button from "../components/Button";
     return (
       <View style={styles.container}>
         <SafeAreaView style={{ alignItems: "center", height: "100%" }}>
-          <Text>결제가 완료되었습니다.</Text>
+          <Text style={styles.text}>결제가 완료되었습니다.</Text>
           <Button buttonText="확인" style={styles.button} />
         </SafeAreaView>
       </View>
@@ -24,4 +24,11 @@ const styles = StyleSheet.create({
         bottom: '12%',
         position: 'absolute',
     },
+    text: {
+      color: COLOR.dark,
+      fontSize: 35,
+      marginTop: "15%",
+      marginBottom: "5%",
+      fontFamily: "SeoulNamsanB"
+  },
 });
