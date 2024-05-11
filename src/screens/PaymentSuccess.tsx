@@ -1,12 +1,14 @@
 import React from "react";
 import { COLOR } from "../utils/color";
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text, View, Image } from "react-native";
 import Button from "../components/Button";
-  
+import complete from '../assets/images/completeMark.png'
+
   export default function PaymentScreen() {
     return (
       <View style={styles.container}>
         <SafeAreaView style={{ alignItems: "center", height: "100%" }}>
+          <Image source={complete} style={styles.imgStyle} />
           <Text style={styles.text}>결제가 완료되었습니다.</Text>
           <Button buttonText="확인" style={styles.button} />
         </SafeAreaView>
@@ -26,9 +28,14 @@ const styles = StyleSheet.create({
     },
     text: {
       color: COLOR.dark,
-      fontSize: 35,
-      marginTop: "15%",
+      fontSize: 32,
+      marginTop: "10%",
       marginBottom: "5%",
       fontFamily: "SeoulNamsanB"
+  },
+    imgStyle: {
+      width: '27%',
+      height: '14%',
+      marginTop: '60%',
   },
 });
