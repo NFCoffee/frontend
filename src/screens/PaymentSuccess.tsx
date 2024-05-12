@@ -4,7 +4,7 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, View, Image } from "react-n
 import Button from "../components/Button";
 import complete from '../assets/images/completeMark.png'
 
-  export default function PaymentScreen() {
+  export default function PaymentSuccessScreen() {
     return (
       <View style={styles.container}>
         <SafeAreaView style={{ alignItems: "center", height: "100%" }}>
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
         height: '100%'
     },
     button: {
-        bottom: '12%',
+        bottom: '3%',
         position: 'absolute',
     },
     text: {

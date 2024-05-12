@@ -3,7 +3,7 @@ import { StyleSheet, View, Dimensions, Text, TouchableOpacity, Image } from "rea
 import { COLOR } from "../utils/color";
 
 const windowHeight = Dimensions.get('window').height;
-export default function CertificationNumScreen() {
+export default function LostKeyScreen() {
     return (
         <>
             <View style={styles.container}>

@@ -8,7 +8,8 @@ export default function TransactionScreen() {
         <View style={styles.container}>
             <SafeAreaView style={{alignItems: "center"}}>
                 <Text style={styles.text}>트랜잭션 기록</Text>
-                <ScrollView style={{width: "100%", height: '65%'}}>
+                <ScrollView style={{width: "100%", height: '72%'}}>
+                {/* 임시 데이터, 추후 변경 필요*/}
                 <Block
                 type="transaction"
                 text1="Transaction 1"

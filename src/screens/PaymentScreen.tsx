@@ -37,7 +37,7 @@ const items = [
                 </Text>
             </View>
           </View>
-          <Button buttonText="주문하기" style={styles.button} />
+          <Button buttonText="결제하기" style={styles.button} />
         </SafeAreaView>
       </View>
     );
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
         fontFamily: 'SeoulNamsanB'
     },
     button: {
-        bottom: '12%',
+        bottom: '3%',
         position: 'absolute',
     },
     insideBox: {

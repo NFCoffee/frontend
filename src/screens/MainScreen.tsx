@@ -2,10 +2,31 @@ import React from "react";
 import { COLOR } from "../utils/color";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import Button from "../components/Button";
+import { StackNavigationProp } from "@react-navigation/stack";
+
+type RootStackParamList = {
+  Main: undefined;
+  Order: undefined;
+  History: undefined;
+};
+
+type MainScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Main'>;
+
+interface MainScreenProps {
+  navigation: MainScreenNavigationProp;
+}
 
 const token: number = 0;
 
-export default function MainScreen() {
+export default function MainScreen({ navigation }: MainScreenProps) {
+    const handleOrder = () => {
+        navigation.navigate("Order");
+    }
+
+    const handleHistory = () => {
+        navigation.navigate("History");
+    }
+
     return (
         <View style={styles.container}>
             <SafeAreaView style={{alignItems: 'center'}}>
@@ -30,9 +51,9 @@ export default function MainScreen() {
                         </View>
                         <Button buttonText="주문하기"
                         style={styles.wideButtons}
-                        onPress={()=>{}}/>
+                        onPress={handleOrder}/>
                     </View>
-                    <View style={styles.quickOrder}>
+                    <View style={styles.transaction}>
                         <View style={styles.quickOrderText}>
                             <Text style={styles.mainText}>트랜잭션 기록</Text>
                             <Text style={styles.smallText}>트랜잭션 최근순 첫번째</Text>
@@ -42,7 +63,7 @@ export default function MainScreen() {
                         </View>
                         <Button buttonText="자세히 보기"
                         style={styles.wideButtons}
-                        onPress={()=>{}}/>
+                        onPress={handleHistory}/>
                     </View>
                 </View>
             </SafeAreaView>
@@ -79,7 +100,13 @@ const styles = StyleSheet.create({
     },
     quickOrder: {
         backgroundColor: "#ffffff",
-        height: '55%',
+        height: '60%',
+        borderRadius: 16,
+        marginTop: '8%',
+    },
+    transaction: {
+        backgroundColor: "#ffffff",
+        height: '76%',
         borderRadius: 16,
         marginTop: '8%',
     },

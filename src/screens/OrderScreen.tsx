@@ -11,8 +11,24 @@ import brewed from '../assets/images/KakaoTalk_Image_2024-04-15-19-29-11_004.png
 import honey from '../assets/images/KakaoTalk_Photo_2024-04-15-20-04-08_001.png'
 import milktea from '../assets/images/KakaoTalk_Photo_2024-04-15-20-04-08_002.png'
 
+import { StackNavigationProp } from "@react-navigation/stack";
 
-export default function OrderScreen() {
+type RootStackParamList = {
+  Order: undefined;
+  Payment: undefined;
+};
+
+type OrderScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Order'>;
+
+interface OrderScreenProps {
+  navigation: OrderScreenNavigationProp;
+}
+
+export default function OrderScreen({ navigation }: OrderScreenProps) {
+    const handlePayment = () => {
+        navigation.navigate("Payment")
+    }
+
     return (
         <View style={styles.container}>
             <SafeAreaView style={{alignItems: 'center', height:'100%'}}>
@@ -36,7 +52,7 @@ export default function OrderScreen() {
                         <Text style={[styles.text, styles.cartItem]}>품목2</Text>
                     </View>
                 </View>
-                <Button buttonText="주문하기" style={styles.button}/>
+                <Button buttonText="주문하기" style={styles.button} onPress={handlePayment}/>
             </SafeAreaView>
         </View>
     )
@@ -78,7 +94,7 @@ const styles = StyleSheet.create({
         marginLeft: "6%",
     },
     button: {
-        bottom: '12%',
+        bottom: '3%',
         position: 'absolute',
     }
 })
