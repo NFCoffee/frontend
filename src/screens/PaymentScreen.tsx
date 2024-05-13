@@ -2,6 +2,18 @@ import React from "react";
 import { COLOR } from "../utils/color";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import Button from "../components/Button";
+import { StackNavigationProp } from "@react-navigation/stack";
+
+type RootStackParamList = {
+  PaymentSuccess: undefined;
+  Payment: undefined;
+};
+
+type PaymentScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Payment'>;
+
+interface PaymentScreenProps {
+  navigation: PaymentScreenNavigationProp;
+}
 
 const items = [
     { name: "품목1", qty: 3 },
@@ -11,8 +23,12 @@ const items = [
     { name: "품목5", qty: 1 },
   ];
   
-  export default function PaymentScreen() {
+  export default function PaymentScreen({ navigation }: PaymentScreenProps) {
     const totalQty = items.reduce((acc, item) => acc + item.qty, 0);
+
+    const handlePayment = () => {
+      navigation.navigate("PaymentSuccess");
+    }
 
     return (
       <View style={styles.container}>
@@ -37,7 +53,7 @@ const items = [
                 </Text>
             </View>
           </View>
-          <Button buttonText="결제하기" style={styles.button} />
+          <Button buttonText="결제하기" style={styles.button} onPress={handlePayment} />
         </SafeAreaView>
       </View>
     );

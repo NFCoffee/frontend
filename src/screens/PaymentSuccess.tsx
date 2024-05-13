@@ -3,14 +3,30 @@ import { COLOR } from "../utils/color";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View, Image } from "react-native";
 import Button from "../components/Button";
 import complete from '../assets/images/completeMark.png'
+import { StackNavigationProp } from "@react-navigation/stack";
 
-  export default function PaymentSuccessScreen() {
+type RootStackParamList = {
+  PaymentSuccess: undefined;
+  Main: undefined;
+};
+
+type PaymentSuccessScreenNavigationProp = StackNavigationProp<RootStackParamList, 'PaymentSuccess'>;
+
+interface PaymentSuccessScreenProps {
+  navigation: PaymentSuccessScreenNavigationProp;
+}
+
+  export default function PaymentSuccessScreen({navigation}: PaymentSuccessScreenProps) {
+    const handleSuccess = () => {
+      navigation.navigate("Main");
+    }
+
     return (
       <View style={styles.container}>
         <SafeAreaView style={{ alignItems: "center", height: "100%" }}>
           <Image source={complete} style={styles.imgStyle} />
           <Text style={styles.text}>결제가 완료되었습니다.</Text>
-          <Button buttonText="확인" style={styles.button} />
+          <Button buttonText="확인" style={styles.button} onPress={handleSuccess}/>
         </SafeAreaView>
       </View>
     );
