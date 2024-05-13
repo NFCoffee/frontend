@@ -19,10 +19,10 @@ export default function SettingScreen() {
                 <Block
                 type="setting"
                 text1="다크모드"
-                />
+                />{/*https://etherscan.io/*/}
                 <Block
                 type="setting"
-                text1="block explorer 이동"
+                text1="block explorer 이동" 
                 />
                 <Block
                 type="setting"
