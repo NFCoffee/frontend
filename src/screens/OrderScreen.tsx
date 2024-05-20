@@ -25,76 +25,76 @@ interface OrderScreenProps {
 }
 
 export default function OrderScreen({ navigation }: OrderScreenProps) {
-    const handlePayment = () => {
-        navigation.navigate("Payment")
-    }
+  const handlePayment = () => {
+    navigation.navigate("Payment")
+  }
 
-    return (
-        <View style={styles.container}>
-            <SafeAreaView style={{alignItems: 'center', height:'100%'}}>
-                <Text style={styles.text}>주문</Text>
-                <View style={styles.box}>
-                    <ScrollView style={{width: "100%", height: '100%', borderRadius: 16}}>
-                        <View style={{alignItems: "center"}}>
-                            <Beverage name="핑크자몽" englishName="Pink Grapefruit" image={jamong}/>
-                            <Beverage name="할리데이 모카" englishName="Holiday Mocha" image={mocha}/>
-                            <Beverage name="카페 라떼" englishName="Cafe Latte" image={latte}/>
-                            <Beverage name="브루드커피" englishName="Brewed Coffee" image={brewed}/>
-                            <Beverage name="허니유자" englishName="Honey Citron" image={honey}/>
-                            <Beverage name="허니밀크티" englishName="Honey Milktea" image={milktea}/>
-                        </View>
-                    </ScrollView>                    
-                </View>
-                <View style={styles.cart}>
-                    <Text style={[styles.text, {fontSize: 20, marginTop: "3%"}]}>장바구니</Text>
-                    <View style={styles.cartItems}>
-                        <Text style={[styles.text, styles.cartItem]}>품목1</Text>
-                        <Text style={[styles.text, styles.cartItem]}>품목2</Text>
-                    </View>
-                </View>
-                <Button buttonText="주문하기" style={styles.button} onPress={handlePayment}/>
-            </SafeAreaView>
+  return (
+    <View style={styles.container}>
+      <SafeAreaView style={{alignItems: 'center', height:'100%'}}>
+        <Text style={styles.text}>주문</Text>
+        <View style={styles.box}>
+          <ScrollView style={{width: "100%", height: '100%', borderRadius: 16}}>
+            <View style={{alignItems: "center"}}>
+              <Beverage name="핑크자몽" englishName="Pink Grapefruit" image={jamong}/>
+              <Beverage name="할리데이 모카" englishName="Holiday Mocha" image={mocha}/>
+              <Beverage name="카페 라떼" englishName="Cafe Latte" image={latte}/>
+              <Beverage name="브루드커피" englishName="Brewed Coffee" image={brewed}/>
+              <Beverage name="허니유자" englishName="Honey Citron" image={honey}/>
+              <Beverage name="허니밀크티" englishName="Honey Milktea" image={milktea}/>
+            </View>
+          </ScrollView>                    
         </View>
-    )
+        <View style={styles.cart}>
+          <Text style={[styles.text, {fontSize: 20, marginTop: "3%"}]}>장바구니</Text>
+          <View style={styles.cartItems}>
+            <Text style={[styles.text, styles.cartItem]}>품목1</Text>
+            <Text style={[styles.text, styles.cartItem]}>품목2</Text>
+          </View>
+        </View>
+        <Button buttonText="주문하기" style={styles.button} onPress={handlePayment}/>
+      </SafeAreaView>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: COLOR.background,
-        width: '100%',
-        height: '100%',
-    },
-    text: {
-        color: COLOR.dark,
-        fontSize: 35,
-        marginTop: "5%",
-        marginBottom: "4%",
-        fontFamily: "SeoulNamsanB"
-    },
-    box: {
-        backgroundColor: "#ffffff",
-        marginTop: "5%",
-        width: '85%',
-        height: '50%',
-        borderRadius: 16
-    },
-    cart: {
-        height: '100%',
-        width: '100%',
-        marginTop: '6%',
-        backgroundColor: "#ffffff",
-        alignItems: 'center',
-    },
-    cartItems: {
-        alignSelf: 'flex-start',
-    },
-    cartItem: {
-        fontSize: 17,
-        marginTop: "1%",
-        marginLeft: "6%",
-    },
-    button: {
-        bottom: '3%',
-        position: 'absolute',
-    }
+  container: {
+    backgroundColor: COLOR.background,
+    width: '100%',
+    height: '100%',
+  },
+  text: {
+    color: COLOR.dark,
+    fontSize: 35,
+    marginTop: "5%",
+    marginBottom: "4%",
+    fontFamily: "SeoulNamsanB"
+  },
+  box: {
+    backgroundColor: "#ffffff",
+    marginTop: "5%",
+    width: '85%',
+    height: '50%',
+    borderRadius: 16
+  },
+  cart: {
+    height: '100%',
+    width: '100%',
+    marginTop: '6%',
+    backgroundColor: "#ffffff",
+    alignItems: 'center',
+  },
+  cartItems: {
+    alignSelf: 'flex-start',
+  },
+  cartItem: {
+    fontSize: 17,
+    marginTop: "1%",
+    marginLeft: "6%",
+  },
+  button: {
+    bottom: '3%',
+    position: 'absolute',
+  }
 })
