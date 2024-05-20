@@ -6,12 +6,20 @@ import SettingScreen from '../screens/SettingScreen';
 import OrderScreen from '../screens/OrderScreen';
 import { COLOR } from '../utils/color';
 import { View, Text, TouchableOpacity } from 'react-native';
+import PaymentScreen from '../screens/PaymentScreen';
+import PaymentSuccessScreen from '../screens/PaymentSuccess';
 
 function MyTabBar({ state, descriptors, navigation }) {
   return (
     <View style={{ flexDirection: 'row' }}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
+        
+        // tabBarButton이 null이면 해당 탭을 렌더링하지 않습니다.
+        if (options.tabBarShowLabel === false) {
+          return null;
+        }
+
         const label =
           options.tabBarLabel !== undefined
             ? options.tabBarLabel
@@ -63,6 +71,7 @@ function MyTabBar({ state, descriptors, navigation }) {
   );
 }
 
+
 const Tab = createBottomTabNavigator();
 
 const TabNavigation = () => {
@@ -77,6 +86,8 @@ const TabNavigation = () => {
         <Tab.Screen name='Order' component={OrderScreen}/>
         <Tab.Screen name='History' component={TransactionScreen}/>
         <Tab.Screen name='Setting' component={SettingScreen}/>
+        <Tab.Screen name='Payment' component={PaymentScreen} options={{ tabBarShowLabel: false }}/>
+        <Tab.Screen name='PaymentSuccess' component={PaymentSuccessScreen} options={{ tabBarShowLabel: false }}/>
       </Tab.Navigator>
   );
 };
