@@ -49,7 +49,8 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
   
   const handlePaymentSuccess = () => {
     navigation.navigate("PaymentSuccess")
-    // 주문내역 포함? 토큰 1개 사용 처리 할 것.
+    // 주문내역(selectedBeverage) 포함? 토큰 1개 사용 처리 할 것.
+    // 토큰 사용 성공 ? navigation : Alert.alert("결제 실패 ... 등의 멘트")
   }
 
   const handleSelectBeverage = (name: string) => {
