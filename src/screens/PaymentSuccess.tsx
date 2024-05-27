@@ -25,7 +25,8 @@ export default function PaymentSuccessScreen({ navigation }: PaymentSuccessScree
     <View style={styles.container}>
       <SafeAreaView style={{ alignItems: "center", height: "100%" }}>
         <Image source={complete} style={styles.imgStyle} resizeMode="contain" />
-        <Text style={styles.text}>결제가 완료되었습니다.</Text>
+        <Text style={styles.text}>주문이 완료되었습니다.</Text>
+        <Text style={styles.text}>음료를 수령해주세요!</Text>
         <Button buttonText="확인" style={styles.button} onPress={handleSuccess} />
       </SafeAreaView>
     </View>
@@ -46,7 +47,6 @@ const styles = StyleSheet.create({
     color: COLOR.dark,
     fontSize: 32,
     marginTop: "10%",
-    marginBottom: "5%",
     fontFamily: "SeoulNamsanB",
   },
   imgStyle: {
