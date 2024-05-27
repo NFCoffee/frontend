@@ -1,12 +1,12 @@
 import React from "react";
 import { COLOR } from "../utils/color";
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Button from "../components/Button";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 type RootStackParamList = {
   Main: undefined;
-  Order: undefined;
+  Order: { beverage?: string };
   History: undefined;
 };
 
@@ -18,9 +18,23 @@ interface MainScreenProps {
 
 const token: number = 0;
 
+const quickOrderItems = [
+  "브루드커피",
+  "카페 라떼",
+  "할리데이 모카",
+  "허니유자"
+];
+
+const transactionItems = [ // 실제 트랜잭션을 불러와 가공 작업 필요
+  "트랜잭션 최근순 첫번째",
+  "트랜잭션 최근순 두번째",
+  "트랜잭션 최근순 세번째",
+  "트랜잭션 최근순 네번째"
+];
+
 export default function MainScreen({ navigation }: MainScreenProps) {
-    const handleOrder = () => {
-        navigation.navigate("Order");
+    const handleOrder = (beverage?: string) => {
+        navigation.navigate("Order", { beverage });
     }
 
     const handleHistory = () => {
@@ -44,22 +58,26 @@ export default function MainScreen({ navigation }: MainScreenProps) {
                     <View style={styles.quickOrder}>
                         <View style={styles.quickOrderText}>
                             <Text style={styles.mainText}>퀵 오더</Text>
-                            <Text style={styles.smallText}>주문량 1위</Text>
-                            <Text style={styles.smallText}>주문량 2위</Text>
-                            <Text style={styles.smallText}>주문량 3위</Text>
-                            <Text style={styles.smallText}>주문량 4위</Text>
+                            <View style={styles.alignCenter}>
+                            {quickOrderItems.map((item, index) => (
+                                <TouchableOpacity key={index} onPress={() => handleOrder(item)}>
+                                    <Text style={styles.smallText}>{item}</Text>
+                                </TouchableOpacity>
+                            ))}
+                            </View>
                         </View>
                         <Button buttonText="주문하기"
                         style={styles.wideButtons}
-                        onPress={handleOrder}/>
+                        onPress={() => handleOrder()}/>
                     </View>
                     <View style={styles.transaction}>
                         <View style={styles.quickOrderText}>
                             <Text style={styles.mainText}>트랜잭션 기록</Text>
-                            <Text style={styles.smallText}>트랜잭션 최근순 첫번째</Text>
-                            <Text style={styles.smallText}>트랜잭션 최근순 두번째</Text>
-                            <Text style={styles.smallText}>트랜잭션 최근순 세번째</Text>
-                            <Text style={styles.smallText}>트랜잭션 최근순 네번째</Text>
+                            <View style={styles.alignCenter}>
+                            {transactionItems.map((item, index) => (
+                                <Text key={index} style={styles.smallText}>{item}</Text>
+                            ))}
+                            </View>
                         </View>
                         <Button buttonText="자세히 보기"
                         style={styles.wideButtons}
@@ -72,6 +90,9 @@ export default function MainScreen({ navigation }: MainScreenProps) {
 }
 
 const styles = StyleSheet.create({
+    alignCenter: {
+      alignItems: 'center'
+    },
     container: {
         backgroundColor: COLOR.background,
         width: '100%',

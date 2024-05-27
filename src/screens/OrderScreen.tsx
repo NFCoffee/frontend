@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { COLOR } from "../utils/color";
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Button from "../components/Button";
@@ -13,20 +13,29 @@ import milktea from '../assets/images/KakaoTalk_Photo_2024-04-15-20-04-08_002.pn
 
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useFocusEffect } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
 
 type RootStackParamList = {
-  Order: undefined;
+  Order: { beverage?: string };
   PaymentSuccess: undefined;
 };
 
 type OrderScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Order'>;
+type OrderScreenRouteProp = RouteProp<RootStackParamList, 'Order'>;
 
 interface OrderScreenProps {
   navigation: OrderScreenNavigationProp;
+  route: OrderScreenRouteProp;
 }
 
-export default function OrderScreen({ navigation }: OrderScreenProps) {
+export default function OrderScreen({ navigation, route }: OrderScreenProps) {
   const [selectedBeverage, setSelectedBeverage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (route.params?.beverage) {
+      setSelectedBeverage(route.params.beverage);
+    }
+  }, [route.params?.beverage]);
 
   useFocusEffect(
     useCallback(() => {
