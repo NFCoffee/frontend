@@ -1,13 +1,13 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import Button from "../components/Button";
-import { network } from "../const/url";
+import { NETWORK } from "../const/url";
 import Web3 from 'web3';
 import 'react-native-get-random-values';
-import 'react-native-url-polyfill/auto';
+// import 'react-native-url-polyfill/auto';
 
 export default function TestWeb3() {
-  const web3 = new Web3(network);
+  const web3 = new Web3(NETWORK);
 
   // 특정 주소의 잔액 확인 함수
   const checkBalance = async (address) => {
