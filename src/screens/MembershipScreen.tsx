@@ -5,9 +5,22 @@ import Button from "../components/Button";
 import { COLOR } from "../utils/color";
 import { URL } from "../const/url";
 import InputField from "../components/InputField";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 const windowHeight = Dimensions.get('window').height;
-export default function MembershipScreen() {
+
+type RootStackParamList = {
+  Signup: undefined;
+  Certification: undefined;
+};
+
+type MembershipScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Signup'>;
+
+interface MembershipScreenProps {
+  navigation: MembershipScreenNavigationProp;
+}
+
+export default function MembershipScreen({ navigation }: MembershipScreenProps) {
   const [email, setEmail] = useState("");
   const [employeeId, setEmployeeId] = useState("");
 
@@ -43,6 +56,8 @@ export default function MembershipScreen() {
     // } catch (error) {
     //   console.error('Error:', error);
     // }
+
+    navigation.navigate("Certification", { email, employeeId });
   };
 
   return (
