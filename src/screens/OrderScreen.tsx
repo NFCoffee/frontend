@@ -19,6 +19,7 @@ import { NETWORK, PLZTOKEN, BEVERAGEORDERING } from "../const/url";
 import PLZTokenABI from '../utils/PLZToken_ABI.json';
 import PLZOrderingABI from '../utils/Ordering_ABI.json';
 import Web3 from "web3";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type RootStackParamList = {
   Order: { beverage: string, englishname: string, privateKey: string };
@@ -95,6 +96,19 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
       const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
   
       console.log('Approve Receipt:', receipt);
+
+      const timestamp = new Date();
+      const transactionRecord = {
+        hash: receipt.transactionHash,
+        method: 'PLZTOKEN.approve',
+        time: timestamp.toLocaleString()
+      };
+
+      // 로컬 스토리지에 트랜잭션 기록 추가 및 상태 업데이트
+      const transactionHistory = await AsyncStorage.getItem('transactionHistory');
+      const transactionArray = transactionHistory ? JSON.parse(transactionHistory) : [];
+      transactionArray.push(transactionRecord);
+      await AsyncStorage.setItem('transactionHistory', JSON.stringify(transactionArray));
     } catch (error: any) {
       console.error('Approve Error:', error.message);
       throw error;  // 오류를 상위로 전파
@@ -127,6 +141,19 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
       const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
   
       console.log('Beverage order Receipt:', receipt);
+
+      const timestamp = new Date();
+      const transactionRecord = {
+        hash: receipt.transactionHash,
+        method: `Ordering.orderBeverage.${selectedEnglishBeverage}`,
+        time: timestamp.toLocaleString()
+      };
+
+      // 로컬 스토리지에 트랜잭션 기록 추가 및 상태 업데이트
+      const transactionHistory = await AsyncStorage.getItem('transactionHistory');
+      const transactionArray = transactionHistory ? JSON.parse(transactionHistory) : [];
+      transactionArray.push(transactionRecord);
+      await AsyncStorage.setItem('transactionHistory', JSON.stringify(transactionArray));
     } catch (error) {
       console.error('Order Error:', error.message);
       throw error;  // 오류를 상위로 전파

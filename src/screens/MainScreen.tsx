@@ -38,10 +38,7 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
   const nftContractAddress = PLZNFT; // NFT 컨트랙트 주소
   const userAccount = web3.eth.accounts.privateKeyToAccount(route.params.privateKey);
   const userAddress = userAccount.address;
-  const plzTokenContract = new web3.eth.Contract(
-    PLZTokenABI as any,
-    PLZTOKEN,
-  );
+  const plzTokenContract = new web3.eth.Contract(PLZTokenABI as any, PLZTOKEN);
 
   const checkBalance = async () => { // 토큰 개수 확인
     if (userAddress) {
@@ -96,11 +93,11 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
   const requestTokens = async (account: string) => {
     try {
       const txCount = await web3.eth.getTransactionCount(account);
-  
+
       const latestBlock = await web3.eth.getBlock('latest');
       const baseFeePerGas = latestBlock.baseFeePerGas ? BigInt(latestBlock.baseFeePerGas) : BigInt(0);
       const maxPriorityFeePerGas = BigInt(web3.utils.toWei('2', 'gwei'));
-  
+
       const txObject = {
         from: account,
         to: PLZTOKEN,
@@ -111,28 +108,29 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
         nonce: web3.utils.toHex(txCount),
         type: '0x2'
       };
-  
+
       const gasLimit = await web3.eth.estimateGas(txObject);
       txObject.gasLimit = web3.utils.toHex(gasLimit);
-  
+
       const signedTx = await web3.eth.accounts.signTransaction(txObject, route.params.privateKey);
       const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
-  
+
       console.log('Request Tokens Receipt:', receipt);
-  
+
       const timestamp = new Date();
       const transactionRecord = {
         hash: receipt.transactionHash,
         method: 'PLZTOKEN.requestTokens',
         time: timestamp.toLocaleString()
       };
-  
-      // 로컬 스토리지에 트랜잭션 기록 추가
+
+      // 로컬 스토리지에 트랜잭션 기록 추가 및 상태 업데이트
       const transactionHistory = await AsyncStorage.getItem('transactionHistory');
       const transactionArray = transactionHistory ? JSON.parse(transactionHistory) : [];
       transactionArray.push(transactionRecord);
       await AsyncStorage.setItem('transactionHistory', JSON.stringify(transactionArray));
-  
+      setTransactionHistory(transactionArray.slice(-4)); // 최근 4개의 트랜잭션만 상태 업데이트
+
     } catch (error) {
       console.error('Error requesting tokens:', error.message);
       console.log(`privatekey: ${route.params.privateKey}`);
@@ -159,7 +157,7 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
     const loadTransactionHistory = async () => {
       const history = await AsyncStorage.getItem('transactionHistory');
       if (history) {
-        setTransactionHistory(JSON.parse(history));
+        setTransactionHistory(JSON.parse(history).slice(-4)); // 최근 4개의 트랜잭션만 상태 업데이트
       }
     };
 
@@ -177,7 +175,6 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
     }
     console.log(item?.beverage, item?.englishname);
   };
-  
 
   const handleHistory = () => { // 트랜잭션 기록 조회
     navigation.navigate("History");
@@ -190,6 +187,10 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
     } catch (error) {
       console.error('Error receiving token:', error);
     }
+  };
+
+  const truncateHash = (hash: string) => {
+    return `${hash.slice(0, 4)}...${hash.slice(-4)}`;
   };
 
   return (
@@ -226,7 +227,10 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
               <Text style={styles.mainText}>트랜잭션 기록</Text>
               <View style={styles.alignCenter}>
                 {transactionHistory.map((item, index) => (
-                  <Text key={index} style={styles.smallText}>{item.method} at {item.time}</Text>
+                  <View key={index} style={{ marginBottom: 5 }}>
+                    <Text style={styles.smallText}>{truncateHash(item.hash)} {item.method}</Text>
+                    <Text style={styles.smallText}>{item.time}</Text>
+                  </View>
                 ))}
               </View>
             </View>
