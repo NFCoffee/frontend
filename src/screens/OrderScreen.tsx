@@ -52,8 +52,12 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
     if (route.params?.beverage) {
       setSelectedBeverage(route.params.beverage);
       setSelectedEnglishBeverage(route.params.englishname);
+    } else {
+      setSelectedBeverage(null);
+      setSelectedEnglishBeverage(null);
     }
   }, [route.params?.beverage]);
+  
 
   useFocusEffect(
     useCallback(() => {
@@ -171,22 +175,22 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
         <View style={styles.box}>
           <ScrollView style={{width: "100%", height: '100%', borderRadius: 16}}>
             <View style={{marginLeft: '5%'}}>
-              <TouchableOpacity onPress={() => handleSelectBeverage("핑크자몽")}>
+              <TouchableOpacity onPress={() => handleSelectBeverage("핑크자몽", "Pink Grapefruit")}>
                 <Beverage name="핑크자몽" englishName="Pink Grapefruit" image={jamong} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleSelectBeverage("할리데이 모카")}>
+              <TouchableOpacity onPress={() => handleSelectBeverage("할리데이 모카", "Holiday Mocha")}>
                 <Beverage name="할리데이 모카" englishName="Holiday Mocha" image={mocha} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleSelectBeverage("카페 라떼")}>
+              <TouchableOpacity onPress={() => handleSelectBeverage("카페 라떼", "Cafe Latte")}>
                 <Beverage name="카페 라떼" englishName="Cafe Latte" image={latte} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleSelectBeverage("브루드커피")}>
+              <TouchableOpacity onPress={() => handleSelectBeverage("브루드커피", "Brewed Coffee")}>
                 <Beverage name="브루드커피" englishName="Brewed Coffee" image={brewed} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleSelectBeverage("허니유자")}>
+              <TouchableOpacity onPress={() => handleSelectBeverage("허니유자", "Honey Citron")}>
                 <Beverage name="허니유자" englishName="Honey Citron" image={honey} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleSelectBeverage("허니밀크티")}>
+              <TouchableOpacity onPress={() => handleSelectBeverage("허니밀크티", "Honey Milktea")}>
                 <Beverage name="허니밀크티" englishName="Honey Milktea" image={milktea} />
               </TouchableOpacity>
             </View>

@@ -33,6 +33,7 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
   const [timeRemained, setTimeRemained] = useState<number>(0);
   const [balance, setBalance] = useState<string>('');
   const [ownsNFT, setOwnsNFT] = useState<boolean | null>(null);
+  const [transactionHistory, setTransactionHistory] = useState<any[]>([]);
   const tokenContractAddress = PLZTOKEN; // 토큰 컨트랙트 주소
   const nftContractAddress = PLZNFT; // NFT 컨트랙트 주소
   const userAccount = web3.eth.accounts.privateKeyToAccount(route.params.privateKey);
@@ -95,11 +96,11 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
   const requestTokens = async (account: string) => {
     try {
       const txCount = await web3.eth.getTransactionCount(account);
-
+  
       const latestBlock = await web3.eth.getBlock('latest');
       const baseFeePerGas = latestBlock.baseFeePerGas ? BigInt(latestBlock.baseFeePerGas) : BigInt(0);
       const maxPriorityFeePerGas = BigInt(web3.utils.toWei('2', 'gwei'));
-
+  
       const txObject = {
         from: account,
         to: PLZTOKEN,
@@ -110,14 +111,28 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
         nonce: web3.utils.toHex(txCount),
         type: '0x2'
       };
-
+  
       const gasLimit = await web3.eth.estimateGas(txObject);
       txObject.gasLimit = web3.utils.toHex(gasLimit);
-
+  
       const signedTx = await web3.eth.accounts.signTransaction(txObject, route.params.privateKey);
       const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
-
+  
       console.log('Request Tokens Receipt:', receipt);
+  
+      const timestamp = new Date();
+      const transactionRecord = {
+        hash: receipt.transactionHash,
+        method: 'PLZTOKEN.requestTokens',
+        time: timestamp.toLocaleString()
+      };
+  
+      // 로컬 스토리지에 트랜잭션 기록 추가
+      const transactionHistory = await AsyncStorage.getItem('transactionHistory');
+      const transactionArray = transactionHistory ? JSON.parse(transactionHistory) : [];
+      transactionArray.push(transactionRecord);
+      await AsyncStorage.setItem('transactionHistory', JSON.stringify(transactionArray));
+  
     } catch (error) {
       console.error('Error requesting tokens:', error.message);
       console.log(`privatekey: ${route.params.privateKey}`);
@@ -140,14 +155,29 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
       });
     }, 1000);
 
+    // 트랜잭션 기록 가져오기
+    const loadTransactionHistory = async () => {
+      const history = await AsyncStorage.getItem('transactionHistory');
+      if (history) {
+        setTransactionHistory(JSON.parse(history));
+      }
+    };
+
+    loadTransactionHistory();
+
     return () => clearInterval(interval);
   }, []);
 
   // 버튼 onPress 함수들
-  const handleOrder = (item: { beverage: string, englishname: string }) => { // 음료 주문
-    navigation.navigate("Order", { beverage: item.beverage, englishname: item.englishname, privateKey: route.params.privateKey });
-    console.log(item.beverage, item.englishname);
-  }
+  const handleOrder = (item?: { beverage: string, englishname: string }) => { // 음료 주문
+    if (item) {
+      navigation.navigate("Order", { beverage: item.beverage, englishname: item.englishname, privateKey: route.params.privateKey });
+    } else {
+      navigation.navigate("Order", { beverage: "", englishname: "", privateKey: route.params.privateKey });
+    }
+    console.log(item?.beverage, item?.englishname);
+  };
+  
 
   const handleHistory = () => { // 트랜잭션 기록 조회
     navigation.navigate("History");
@@ -195,8 +225,8 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
             <View style={styles.quickOrderText}>
               <Text style={styles.mainText}>트랜잭션 기록</Text>
               <View style={styles.alignCenter}>
-                {transactionItems.map((item, index) => (
-                  <Text key={index} style={styles.smallText}>{item}</Text>
+                {transactionHistory.map((item, index) => (
+                  <Text key={index} style={styles.smallText}>{item.method} at {item.time}</Text>
                 ))}
               </View>
             </View>
