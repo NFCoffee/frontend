@@ -13,6 +13,7 @@ import OrderScreen from "./src/screens/OrderScreen";
 import PaymentScreen from "./src/screens/PaymentScreen";
 import PaymentSuccessScreen from "./src/screens/PaymentSuccess";
 import TestWeb3 from "./src/screens/TestWeb3";
+import MainScreen from "./src/screens/MainScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,7 +22,6 @@ export default function App() {
     <>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
-        {/* <Stack.Screen name="Test" component={TestWeb3} /> */}
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Signup" component={MembershipScreen} />
         <Stack.Screen name="Certification" component={CertificationNumScreen} />
@@ -33,6 +33,7 @@ export default function App() {
         <Stack.Screen name="Payment" component={PaymentScreen} />
         <Stack.Screen name="PaymentSuccess" component={PaymentSuccessScreen} />
         <Stack.Screen name="Tab" component={TabNavigation} />
+        {/* <Stack.Screen name="Main" component={MainScreen} /> */}
       </Stack.Navigator>
     </NavigationContainer>
     </>

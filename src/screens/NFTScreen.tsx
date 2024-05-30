@@ -3,14 +3,24 @@ import { StyleSheet, Text, View, Dimensions } from "react-native";
 import BasicScreen from "../components/BasicScreen";
 import Button from "../components/Button";
 import { COLOR } from "../utils/color";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 const windowHeight = Dimensions.get('window').height;
 
-export default function NFTScreen() {
-  const [isButtonClicked, setIsButtonClicked] = useState(false);
+type RootStackParamList = {
+  NFT: undefined;
+  Login: undefined;
+};
 
-  const handleCopyKey = () => {
-    setIsButtonClicked(true);
+type NFTScreenNavigationProp = StackNavigationProp<RootStackParamList, 'NFT'>;
+
+interface NFTScreenProps {
+  navigation: NFTScreenNavigationProp;
+}
+
+export default function NFTScreen({navigation}: NFTScreenProps) {
+  const handleLogin = () => {
+    navigation.navigate("Login");
   };
 
   return (
@@ -19,10 +29,10 @@ export default function NFTScreen() {
         <Text style={styles.mainText}>NFCOFFEE</Text>
     </View>
     <BasicScreen>
-        <Text style={styles.text}>NFT 발급 완료!</Text>
+        <Text style={styles.text}>NFT 발급 및 가입 완료!</Text>
     </BasicScreen>
     <View style={styles.container}>    
-        <Text style={styles.login} onPress={()=>{}}>로그인하기</Text>
+        <Text style={styles.login} onPress={handleLogin}>로그인하기</Text>
     </View>
     </>
   );

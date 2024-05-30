@@ -5,58 +5,49 @@ import Button from "../components/Button";
 import { StackNavigationProp } from "@react-navigation/stack";
 import Web3 from "web3";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { quickOrderItems } from "../const/quickOrderItems";
+import { transactionItems } from "../const/transactionItems";
+import SmartContractService from "../utils/SmartContractService";
+import { RouteProp } from '@react-navigation/native';
+import { NETWORK, PLZTOKEN, PLZNFT } from "../const/url";
+import PLZTokenABI from '../utils/PLZToken_ABI.json';
+import PLZNFTABI from '../utils/PLZNFT_ABI.json';
 
 type RootStackParamList = {
-  Main: undefined;
+  Main: {privateKey: string};
   Order: { beverage?: string };
   History: undefined;
 };
 
 type MainScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Main'>;
+type MainScreenRouteProp = RouteProp<RootStackParamList, 'Main'>;
+
 
 interface MainScreenProps {
   navigation: MainScreenNavigationProp;
+  route: MainScreenRouteProp;
 }
 
-const quickOrderItems = [
-  "브루드커피",
-  "카페 라떼",
-  "할리데이 모카",
-  "허니유자"
-];
-
-const transactionItems = [ // 실제 트랜잭션을 불러와 가공 작업 필요
-  "트랜잭션 최근순 첫번째",
-  "트랜잭션 최근순 두번째",
-  "트랜잭션 최근순 세번째",
-  "트랜잭션 최근순 네번째"
-];
-
-// // Web3 인스턴스 생성
-// const web3 = new Web3('http://192.168.55.177:8545');
-
-// // 트랜잭션 해시
-// const transactionHash = '0x5431dac35e22d67773bb398b8e0d374c203ff4c7bbc8d3cad95499a849682cc7'; // 실제 트랜잭션 해시로 변경
-
-// // 트랜잭션 조회 함수
-// const getTransaction = async (txHash) => {
-//     try {
-//         const transaction = await web3.eth.getTransaction(txHash);
-//         if (transaction) {
-//             console.log('Transaction Details:', transaction);
-//         } else {
-//             console.log('Transaction not found');
-//         }
-//     } catch (error) {
-//         console.error(`Error retrieving transaction: ${error.message}`);
-//     }
-// };
-
-export default function MainScreen({ navigation }: MainScreenProps) {
-  const [token, setToken] = useState(0);
+export default function MainScreen({ navigation, route }: MainScreenProps) {
+  const web3 = new Web3(NETWORK);
   const [isTokenReceived, setIsTokenReceived] = useState(false);
+  const [balance, setBalance] = useState('');
   const userName = "이지인"; // 유저 정보 조회로 이름 가져오기..?
   const userId = "user123"; // 실제 유저 ID로 변경 필요
+  const tokenContractAddress = PLZTOKEN;
+  const nftContractAddress = PLZNFT;
+  const [ownsNFT, setOwnsNFT] = useState<boolean | null>(null);
+  const userAddress = web3.eth.accounts.privateKeyToAccount(route.params.privateKey).address;
+
+  const checkBalance = async () => {
+    if (userAddress) {
+      const contract = new web3.eth.Contract(PLZTokenABI as any, tokenContractAddress);
+      const balance = await contract.methods.balanceOf(userAddress).call();
+      setBalance(web3.utils.fromWei(Number(balance), 'ether'));
+
+      console.log(balance);
+    }
+  };
 
   useEffect(() => {
     // 토큰 수령 상태 초기화
@@ -76,7 +67,17 @@ export default function MainScreen({ navigation }: MainScreenProps) {
     };
 
     checkTokenReceived();
+    checkBalance();
+    checkOwnership();
   }, []);
+
+  const checkOwnership = async () => {
+    if (userAddress) {
+      const contract = new web3.eth.Contract(PLZNFTABI as any, nftContractAddress);
+      const balance = await contract.methods.balanceOf(userAddress).call();
+      setOwnsNFT(Number(balance) > 0);
+    }
+  };
 
   const handleOrder = (beverage?: string) => {
     navigation.navigate("Order", { beverage });
@@ -90,19 +91,10 @@ export default function MainScreen({ navigation }: MainScreenProps) {
 
   const handleToken = async () => {
     try {
-    //   // 스마트 컨트랙트 호출
-    //   const accounts = await web3.eth.getAccounts();
-    //   const receipt = await contract.methods.receiveToken().send({ from: accounts[0] });
-      
-    //   console.log('Token received:', receipt);
-
-    //   // 토큰 개수 업데이트 (스마트 컨트랙트에서 받아오기)
-    //   const newTokenCount = await contract.methods.getTokenBalance(accounts[0]).call();
-    //   setToken(newTokenCount);
-
       // 토큰 수령 상태 업데이트
       setIsTokenReceived(true);
       await AsyncStorage.setItem(`lastReceivedDate_${userId}`, new Date().toDateString());
+
     } catch (error) {
       console.error('Error receiving token:', error);
     }
@@ -115,8 +107,8 @@ export default function MainScreen({ navigation }: MainScreenProps) {
           <Text style={styles.text}>NFCOFFEE</Text>
           <View style={styles.tokenBox}>
             <View>
-              <Text style={{ fontFamily: 'SeoulNamsan' }}>{userName}님</Text>
-              <Text style={{marginTop: '2%', fontSize: 18, fontFamily: 'SeoulNamsanEB'}}>잔여 토큰 | {token} PLZ</Text>
+              <Text style={{ fontFamily: 'SeoulNamsan' }}>{ownsNFT ? 'NFT 보유' : 'NFT 없음'}</Text>
+              <Text style={{marginTop: '2%', fontSize: 18, fontFamily: 'SeoulNamsanEB'}}>잔여 토큰 | {balance} PLZ</Text>
             </View>
             <Button buttonText={"오늘의 토큰"} 
               style={isTokenReceived ? {width: '40%', height: '100%', backgroundColor: COLOR.gray} : {width: '40%', height: '100%'}} 
