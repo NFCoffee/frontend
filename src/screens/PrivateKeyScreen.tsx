@@ -34,13 +34,17 @@ export default function PrivateKeyScreen({ navigation, route }:PrivateKeyScreenP
     navigation.navigate('NFT');
   }
 
+  const handleNoticeForCopy = () => {
+    Alert.alert("Private Key를 복사하여 기록하세요!");
+  }
+
   return (
     <BasicScreen>
       <View style={styles.content}>
         <Text style={styles.text}>⚠Private Key는 반드시 기록하세요!⚠</Text>
         <Text style={{fontSize: 14, marginTop: 9}}>{privateKey}</Text>
         <Button buttonText="키 복사" style={styles.loginButton} onPress={handleCopyKey} />
-        {isButtonClicked ? <Button buttonText="완료" style={styles.buttonClicked}/> : <Button buttonText="완료" style={styles.submitButton}/>}
+        {isButtonClicked ? <Button buttonText="완료" style={styles.buttonClicked} onPress={ handleSubmit }/> : <Button buttonText="완료" style={styles.submitButton} onPress={ handleNoticeForCopy }/>}
       </View>
     </BasicScreen>
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, Dimensions, Text, TouchableOpacity, Image } from "react-native";
 import BasicScreen from "../components/BasicScreen";
 import Button from "../components/Button";
@@ -6,15 +6,31 @@ import { COLOR } from "../utils/color";
 import InputField from "../components/InputField";
 import Logo from '../assets/images/planzLogo.png'
 import { StackNavigationProp } from "@react-navigation/stack";
+import SmartContractService from "../utils/SmartContractService";
+import Web3 from "web3";
+import { NETWORK } from "../const/url"
+import { CompositeNavigationProp } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 type RootStackParamList = {
   Login: undefined;
-  Tab: undefined;
   Signup: undefined;
   Lostkey: undefined;
+  Tab: {privateKey: string};
 };
 
-type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
+type TabParamList = {
+  Main: { privateKey: string };
+  Login: undefined;
+};
+
+type LoginScreenStackNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
+type LoginScreenTabNavigationProp = BottomTabNavigationProp<TabParamList, 'Login'>;
+
+type LoginScreenNavigationProp = CompositeNavigationProp<
+  LoginScreenStackNavigationProp,
+  LoginScreenTabNavigationProp
+>;
 
 interface LoginScreenProps {
   navigation: LoginScreenNavigationProp;
@@ -23,12 +39,28 @@ interface LoginScreenProps {
 const windowHeight = Dimensions.get('window').height;
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
+  const [privateKey, setPrivateKey] = useState<string>('');
+  const [hasNFT, setHasNFT] = useState<boolean>(false);
+  const [balance, setBalance] = useState<number | null>(null);
+  const web3 = new Web3(NETWORK);
+  // const account = web3.eth.accounts.privateKeyToAccount(privateKey).address;
+  
   const handleLogin = () => {
     // 추후에 API 통신이 들어갈 자리입니다.
-    // privatekey (${wallet})을 백으로 전송하여 로그인을 진행합니다.
     // 현재는 즉시 메인으로 이동하게 설정해두었습니다.
+    // const checkUserNFT = async () => {
+    //   const result = await SmartContractService.userHasNFT(account, tokenId);
+    //   setHasNFT(result);
+    // };
 
-    navigation.navigate("Tab");
+    // const fetchBalance = async () => {
+    //     const result = await SmartContractService.balanceOf(account);
+    //     setBalance(result);
+    // };
+
+    // checkUserNFT();
+    // fetchBalance();
+    navigation.navigate('Tab', { screen: 'Main', params: { privateKey } });
   }
   
   const handleSignup = () => {
@@ -47,7 +79,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     <BasicScreen>
       <View style={styles.content}>
         <Image source={Logo} style={styles.imgStyle} />
-        <InputField placeholder="private key 입력" defaultValue="" style={styles.inputField} />
+        <InputField placeholder="private key 입력" defaultValue="" style={styles.inputField} onChangeText={setPrivateKey} />
         <Button buttonText="로그인" style={styles.button} onPress={handleLogin}/>
         <Button buttonText="회원가입" style={styles.button} onPress={handleSignup}/>
       </View>
