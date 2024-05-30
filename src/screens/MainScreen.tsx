@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { COLOR } from "../utils/color";
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Button from "../components/Button";
 import { StackNavigationProp } from "@react-navigation/stack";
 import Web3, { AbiItem } from "web3";
@@ -33,14 +33,12 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
   const [timeRemained, setTimeRemained] = useState<number>(0);
   const [balance, setBalance] = useState<string>('');
   const [ownsNFT, setOwnsNFT] = useState<boolean | null>(null);
+  const [transactionHistory, setTransactionHistory] = useState<any[]>([]);
   const tokenContractAddress = PLZTOKEN; // 토큰 컨트랙트 주소
   const nftContractAddress = PLZNFT; // NFT 컨트랙트 주소
   const userAccount = web3.eth.accounts.privateKeyToAccount(route.params.privateKey);
   const userAddress = userAccount.address;
-  const plzTokenContract = new web3.eth.Contract(
-    PLZTokenABI as any,
-    PLZTOKEN,
-  );
+  const plzTokenContract = new web3.eth.Contract(PLZTokenABI as any, PLZTOKEN);
 
   const checkBalance = async () => { // 토큰 개수 확인
     if (userAddress) {
@@ -118,6 +116,21 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
       const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 
       console.log('Request Tokens Receipt:', receipt);
+
+      const timestamp = new Date();
+      const transactionRecord = {
+        hash: receipt.transactionHash,
+        method: 'PLZTOKEN.requestTokens',
+        time: timestamp.toLocaleString()
+      };
+
+      // 로컬 스토리지에 트랜잭션 기록 추가 및 상태 업데이트
+      const transactionHistory = await AsyncStorage.getItem('transactionHistory');
+      const transactionArray = transactionHistory ? JSON.parse(transactionHistory) : [];
+      transactionArray.push(transactionRecord);
+      await AsyncStorage.setItem('transactionHistory', JSON.stringify(transactionArray));
+      setTransactionHistory(transactionArray.slice(-4)); // 최근 4개의 트랜잭션만 상태 업데이트
+
     } catch (error) {
       console.error('Error requesting tokens:', error.message);
       console.log(`privatekey: ${route.params.privateKey}`);
@@ -140,14 +153,28 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
       });
     }, 1000);
 
+    // 트랜잭션 기록 가져오기
+    const loadTransactionHistory = async () => {
+      const history = await AsyncStorage.getItem('transactionHistory');
+      if (history) {
+        setTransactionHistory(JSON.parse(history).slice(-4)); // 최근 4개의 트랜잭션만 상태 업데이트
+      }
+    };
+
+    loadTransactionHistory();
+
     return () => clearInterval(interval);
   }, []);
 
   // 버튼 onPress 함수들
-  const handleOrder = (item: { beverage: string, englishname: string }) => { // 음료 주문
-    navigation.navigate("Order", { beverage: item.beverage, englishname: item.englishname, privateKey: route.params.privateKey });
-    console.log(item.beverage, item.englishname);
-  }
+  const handleOrder = (item?: { beverage: string, englishname: string }) => { // 음료 주문
+    if (item) {
+      navigation.navigate("Order", { beverage: item.beverage, englishname: item.englishname, privateKey: route.params.privateKey });
+    } else {
+      navigation.navigate("Order", { beverage: "", englishname: "", privateKey: route.params.privateKey });
+    }
+    console.log(item?.beverage, item?.englishname);
+  };
 
   const handleHistory = () => { // 트랜잭션 기록 조회
     navigation.navigate("History");
@@ -160,6 +187,10 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
     } catch (error) {
       console.error('Error receiving token:', error);
     }
+  };
+
+  const truncateHash = (hash: string) => {
+    return `${hash.slice(0, 4)}...${hash.slice(-4)}`;
   };
 
   return (
@@ -179,7 +210,7 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
           <View style={styles.quickOrder}>
             <View style={styles.quickOrderText}>
               <Text style={styles.mainText}>퀵 오더</Text>
-              <View style={styles.alignCenter}>
+              <View style={{alignItems:'center'}}>
                 {quickOrderItems.map((item, index) => (
                   <TouchableOpacity key={index} onPress={() => handleOrder(item)}>
                     <Text style={styles.smallText}>{item.beverage}</Text>
@@ -193,12 +224,15 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
           </View>
           <View style={styles.transaction}>
             <View style={styles.quickOrderText}>
-              <Text style={styles.mainText}>트랜잭션 기록</Text>
-              <View style={styles.alignCenter}>
-                {transactionItems.map((item, index) => (
-                  <Text key={index} style={styles.smallText}>{item}</Text>
+              <Text style={[styles.mainText, {marginBottom: '2%'}]}>트랜잭션 기록</Text>
+              <ScrollView style={{height: 160}}>
+                {transactionHistory.map((item, index) => (
+                  <View key={index} style={{ marginBottom: 5, borderTopWidth: 1 }}>
+                    <Text style={styles.methodText}>{item.method}</Text>
+                    <Text style={styles.smallText}>{truncateHash(item.hash)}     {item.time}</Text>
+                  </View>
                 ))}
-              </View>
+              </ScrollView>
             </View>
             <Button buttonText="자세히 보기"
               style={styles.wideButtons}
@@ -264,12 +298,19 @@ const styles = StyleSheet.create({
   },
   mainText: {
     fontSize: 25, 
-    fontFamily: 'SeoulNamsanB'
+    fontFamily: 'SeoulNamsanB',
   },
   smallText: {
     fontSize: 14, 
     fontFamily: 'SeoulNamsanB',
     marginTop: '3%',
     marginLeft: '5%'
+  },
+  methodText: {
+    fontSize: 14, 
+    fontFamily: 'SeoulNamsanEB',
+    marginTop: '3%',
+    marginLeft: '5%',
+    color: COLOR.lightblue
   }
 })

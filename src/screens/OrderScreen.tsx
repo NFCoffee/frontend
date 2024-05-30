@@ -19,6 +19,7 @@ import { NETWORK, PLZTOKEN, BEVERAGEORDERING } from "../const/url";
 import PLZTokenABI from '../utils/PLZToken_ABI.json';
 import PLZOrderingABI from '../utils/Ordering_ABI.json';
 import Web3 from "web3";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type RootStackParamList = {
   Order: { beverage: string, englishname: string, privateKey: string };
@@ -52,8 +53,12 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
     if (route.params?.beverage) {
       setSelectedBeverage(route.params.beverage);
       setSelectedEnglishBeverage(route.params.englishname);
+    } else {
+      setSelectedBeverage(null);
+      setSelectedEnglishBeverage(null);
     }
   }, [route.params?.beverage]);
+  
 
   useFocusEffect(
     useCallback(() => {
@@ -91,6 +96,19 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
       const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
   
       console.log('Approve Receipt:', receipt);
+
+      const timestamp = new Date();
+      const transactionRecord = {
+        hash: receipt.transactionHash,
+        method: 'PLZTOKEN.approve',
+        time: timestamp.toLocaleString()
+      };
+
+      // 로컬 스토리지에 트랜잭션 기록 추가 및 상태 업데이트
+      const transactionHistory = await AsyncStorage.getItem('transactionHistory');
+      const transactionArray = transactionHistory ? JSON.parse(transactionHistory) : [];
+      transactionArray.push(transactionRecord);
+      await AsyncStorage.setItem('transactionHistory', JSON.stringify(transactionArray));
     } catch (error: any) {
       console.error('Approve Error:', error.message);
       throw error;  // 오류를 상위로 전파
@@ -123,6 +141,19 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
       const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
   
       console.log('Beverage order Receipt:', receipt);
+
+      const timestamp = new Date();
+      const transactionRecord = {
+        hash: receipt.transactionHash,
+        method: `Ordering.orderBeverage.${selectedEnglishBeverage}`,
+        time: timestamp.toLocaleString()
+      };
+
+      // 로컬 스토리지에 트랜잭션 기록 추가 및 상태 업데이트
+      const transactionHistory = await AsyncStorage.getItem('transactionHistory');
+      const transactionArray = transactionHistory ? JSON.parse(transactionHistory) : [];
+      transactionArray.push(transactionRecord);
+      await AsyncStorage.setItem('transactionHistory', JSON.stringify(transactionArray));
     } catch (error) {
       console.error('Order Error:', error.message);
       throw error;  // 오류를 상위로 전파
@@ -136,6 +167,7 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
       navigation.navigate("PaymentSuccess", {privateKey: route.params.privateKey});
     } catch (error) {
       console.log(error);
+      Alert.alert('주문 실패!');
     }
   };
   
@@ -171,22 +203,22 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
         <View style={styles.box}>
           <ScrollView style={{width: "100%", height: '100%', borderRadius: 16}}>
             <View style={{marginLeft: '5%'}}>
-              <TouchableOpacity onPress={() => handleSelectBeverage("핑크자몽")}>
+              <TouchableOpacity onPress={() => handleSelectBeverage("핑크자몽", "Pink Grapefruit")}>
                 <Beverage name="핑크자몽" englishName="Pink Grapefruit" image={jamong} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleSelectBeverage("할리데이 모카")}>
+              <TouchableOpacity onPress={() => handleSelectBeverage("할리데이 모카", "Holiday Mocha")}>
                 <Beverage name="할리데이 모카" englishName="Holiday Mocha" image={mocha} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleSelectBeverage("카페 라떼")}>
+              <TouchableOpacity onPress={() => handleSelectBeverage("카페 라떼", "Cafe Latte")}>
                 <Beverage name="카페 라떼" englishName="Cafe Latte" image={latte} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleSelectBeverage("브루드커피")}>
+              <TouchableOpacity onPress={() => handleSelectBeverage("브루드커피", "Brewed Coffee")}>
                 <Beverage name="브루드커피" englishName="Brewed Coffee" image={brewed} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleSelectBeverage("허니유자")}>
+              <TouchableOpacity onPress={() => handleSelectBeverage("허니유자", "Honey Citron")}>
                 <Beverage name="허니유자" englishName="Honey Citron" image={honey} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleSelectBeverage("허니밀크티")}>
+              <TouchableOpacity onPress={() => handleSelectBeverage("허니밀크티", "Honey Milktea")}>
                 <Beverage name="허니밀크티" englishName="Honey Milktea" image={milktea} />
               </TouchableOpacity>
             </View>
