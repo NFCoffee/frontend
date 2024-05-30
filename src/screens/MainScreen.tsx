@@ -14,7 +14,7 @@ import PLZNFTABI from '../utils/PLZNFT_ABI.json';
 
 type RootStackParamList = {
   Main: {privateKey: string};
-  Order: { beverage?: string };
+  Order: { beverage?: string, englishname?: string, privateKey: string };
   History: undefined;
 };
 
@@ -37,7 +37,6 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
   const nftContractAddress = PLZNFT; // NFT 컨트랙트 주소
   const userAccount = web3.eth.accounts.privateKeyToAccount(route.params.privateKey);
   const userAddress = userAccount.address;
-  web3.eth.accounts.wallet.add(userAccount);
   const plzTokenContract = new web3.eth.Contract(
     PLZTokenABI as any,
     PLZTOKEN,
@@ -145,8 +144,9 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
   }, []);
 
   // 버튼 onPress 함수들
-  const handleOrder = (beverage?: string) => { // 음료 주문
-    navigation.navigate("Order", { beverage });
+  const handleOrder = (item: { beverage: string, englishname: string }) => { // 음료 주문
+    navigation.navigate("Order", { beverage: item.beverage, englishname: item.englishname, privateKey: route.params.privateKey });
+    console.log(item.beverage, item.englishname);
   }
 
   const handleHistory = () => { // 트랜잭션 기록 조회
@@ -182,7 +182,7 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
               <View style={styles.alignCenter}>
                 {quickOrderItems.map((item, index) => (
                   <TouchableOpacity key={index} onPress={() => handleOrder(item)}>
-                    <Text style={styles.smallText}>{item}</Text>
+                    <Text style={styles.smallText}>{item.beverage}</Text>
                   </TouchableOpacity>
                 ))}
               </View>

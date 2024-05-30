@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { COLOR } from "../utils/color";
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Button from "../components/Button";
 import Beverage from "../components/Beverage";
 
@@ -15,9 +15,14 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useFocusEffect } from '@react-navigation/native';
 import { RouteProp } from '@react-navigation/native';
 
+import { NETWORK, PLZTOKEN, BEVERAGEORDERING } from "../const/url";
+import PLZTokenABI from '../utils/PLZToken_ABI.json';
+import PLZOrderingABI from '../utils/Ordering_ABI.json';
+import Web3 from "web3";
+
 type RootStackParamList = {
-  Order: { beverage?: string };
-  PaymentSuccess: undefined;
+  Order: { beverage: string, englishname: string, privateKey: string };
+  PaymentSuccess: {privateKey: string};
 };
 
 type OrderScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Order'>;
@@ -29,11 +34,24 @@ interface OrderScreenProps {
 }
 
 export default function OrderScreen({ navigation, route }: OrderScreenProps) {
+  const web3 = new Web3(NETWORK);
   const [selectedBeverage, setSelectedBeverage] = useState<string | null>(null);
+  const [selectedEnglishBeverage, setSelectedEnglishBeverage] = useState<string | null>(null);
+  const userAccount = web3.eth.accounts.privateKeyToAccount(route.params.privateKey);
+  const userAddress = userAccount.address;
+  const plzTokenContract = new web3.eth.Contract(
+    PLZTokenABI as any,
+    PLZTOKEN,
+  );
+  const orderingContract = new web3.eth.Contract(
+    PLZOrderingABI as any,
+    BEVERAGEORDERING,
+  );
 
   useEffect(() => {
     if (route.params?.beverage) {
       setSelectedBeverage(route.params.beverage);
+      setSelectedEnglishBeverage(route.params.englishname);
     }
   }, [route.params?.beverage]);
 
@@ -47,14 +65,103 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
     }, [])
   );
   
-  const handlePaymentSuccess = () => {
-    navigation.navigate("PaymentSuccess")
-    // 주문내역(selectedBeverage) 포함? 토큰 1개 사용 처리 할 것.
-    // 토큰 사용 성공 ? navigation : Alert.alert("결제 실패 ... 등의 멘트")
-  }
+  const approve = async(account: string) => {
+    try {
+      const txCount = await web3.eth.getTransactionCount(account);
+  
+      const latestBlock = await web3.eth.getBlock('latest');
+      const baseFeePerGas = latestBlock.baseFeePerGas ? BigInt(latestBlock.baseFeePerGas) : BigInt(0);
+      const maxPriorityFeePerGas = BigInt(web3.utils.toWei('2', 'gwei'));
+  
+      const txObject = {
+        from: account,
+        to: PLZTOKEN,
+        data: plzTokenContract.methods.approve(BEVERAGEORDERING, '1000000000000000000').encodeABI(),
+        gasLimit: web3.utils.toHex(210000),
+        maxFeePerGas: web3.utils.toHex(baseFeePerGas + maxPriorityFeePerGas),
+        maxPriorityFeePerGas: web3.utils.toHex(maxPriorityFeePerGas),
+        nonce: web3.utils.toHex(txCount),
+        type: '0x2'
+      };
+  
+      const gasLimit = await web3.eth.estimateGas(txObject);
+      txObject.gasLimit = web3.utils.toHex(gasLimit);
+  
+      const signedTx = await web3.eth.accounts.signTransaction(txObject, route.params.privateKey);
+      const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+  
+      console.log('Approve Receipt:', receipt);
+    } catch (error: any) {
+      console.error('Approve Error:', error.message);
+      throw error;  // 오류를 상위로 전파
+    }
+  };
+  
+  const order = async(account: string) => {
+    try {
+      const txCount = await web3.eth.getTransactionCount(account);
+  
+      const latestBlock = await web3.eth.getBlock('latest');
+      const baseFeePerGas = latestBlock.baseFeePerGas ? BigInt(latestBlock.baseFeePerGas) : BigInt(0);
+      const maxPriorityFeePerGas = BigInt(web3.utils.toWei('2', 'gwei'));
+  
+      const txObject = {
+        from: account,
+        to: BEVERAGEORDERING,
+        data: orderingContract.methods.orderBeverage(selectedEnglishBeverage).encodeABI(),
+        gasLimit: web3.utils.toHex(210000),
+        maxFeePerGas: web3.utils.toHex(baseFeePerGas + maxPriorityFeePerGas),
+        maxPriorityFeePerGas: web3.utils.toHex(maxPriorityFeePerGas),
+        nonce: web3.utils.toHex(txCount),
+        type: '0x2'
+      };
+  
+      const gasLimit = await web3.eth.estimateGas(txObject);
+      txObject.gasLimit = web3.utils.toHex(gasLimit);
+  
+      const signedTx = await web3.eth.accounts.signTransaction(txObject, route.params.privateKey);
+      const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+  
+      console.log('Beverage order Receipt:', receipt);
+    } catch (error) {
+      console.error('Order Error:', error.message);
+      throw error;  // 오류를 상위로 전파
+    }
+  };
+  
+  const approveAndOrder = async(account: string) => {
+    try {
+      await approve(account);  // await 키워드 추가
+      await order(account);    // await 키워드 추가
+      navigation.navigate("PaymentSuccess", {privateKey: route.params.privateKey});
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
+  const showConfirmationAlert = () => {
+    Alert.alert(
+      "토큰을 사용하시겠습니까?",
+      "토큰이 한 개 차감됩니다.",
+      [
+        {
+          text: "아니오",
+          onPress: () => console.log("토큰 사용 취소됨"),
+          style: "cancel"
+        },
+        {
+          text: "예",
+          onPress: () => approveAndOrder(userAddress)
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+  
 
-  const handleSelectBeverage = (name: string) => {
+  const handleSelectBeverage = (name: string, englishname:string) => {
     setSelectedBeverage(name);
+    setSelectedEnglishBeverage(englishname);
   }
 
   return (
@@ -95,7 +202,7 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
             )}
           </View>
         </View>
-        <Button buttonText="주문하기" style={styles.button} onPress={handlePaymentSuccess}/>
+        <Button buttonText="주문하기" style={styles.button} onPress={showConfirmationAlert}/>
       </SafeAreaView>
     </View>
   )
@@ -137,3 +244,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
   }
 })
+
+function async(privateKey: string) {
+  throw new Error("Function not implemented.");
+}
