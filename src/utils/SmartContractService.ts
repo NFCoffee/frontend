@@ -210,33 +210,6 @@ export const SmartContractService = {
       console.error('Error getting owner of token:', error);
     }
   },
-
-  // userHasNFT: async (account: string, tokenId: number) => {
-  //   try {
-  //     const owner = await plzNftContract.methods.ownerOf(tokenId).call();
-  //     return owner.toLowerCase() === account.toLowerCase();
-  //   } catch (error) {
-  //     console.error('Error checking if user has NFT:', error);
-  //     return false;
-  //   }
-  // },
-  userHasNFT: async (account: string, tokenId: number) => {
-    try {
-      const owner: string = await plzNftContract.methods
-        .ownerOf(tokenId)
-        .call();
-
-      if (owner) {
-        return owner.toLowerCase() === account.toLowerCase();
-      } else {
-        console.error('Owner is not defined:', owner);
-        return false;
-      }
-    } catch (error) {
-      console.error('Error checking if user has NFT:', error);
-      return false;
-    }
-  },
 };
 
 export default SmartContractService;
