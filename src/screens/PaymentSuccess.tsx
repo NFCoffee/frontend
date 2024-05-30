@@ -4,22 +4,46 @@ import { SafeAreaView, StyleSheet, Text, View, Image } from "react-native";
 import Button from "../components/Button";
 import complete from '../assets/images/completeMark.png';
 import { StackNavigationProp } from "@react-navigation/stack";
+import { CompositeNavigationProp } from '@react-navigation/native';
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { RouteProp } from '@react-navigation/native';
 
 type RootStackParamList = {
-  PaymentSuccess: undefined;
-  Main: undefined;
+  PaymentSuccess: {privateKey: string};
+  Tab: {privateKey: string};
 };
 
-type PaymentSuccessScreenNavigationProp = StackNavigationProp<RootStackParamList, 'PaymentSuccess'>;
+type TabParamList = {
+  Main: { privateKey: string };
+  PaymentSuccess: {privateKey: string};
+};
+
+type PaymentSuccessScreenStackNavigationProp = StackNavigationProp<RootStackParamList, 'PaymentSuccess'>;
+type PaymentSuccessScreenTabNavigationProp = BottomTabNavigationProp<TabParamList, 'PaymentSuccess'>;
+type PaymentSuccessScreenRouteProp = RouteProp<RootStackParamList, 'PaymentSuccess'>;
+
+type PaymentSuccessScreenNavigationProp = CompositeNavigationProp<
+  PaymentSuccessScreenStackNavigationProp,
+  PaymentSuccessScreenTabNavigationProp
+>;
 
 interface PaymentSuccessScreenProps {
   navigation: PaymentSuccessScreenNavigationProp;
+  route: PaymentSuccessScreenRouteProp
 }
 
-export default function PaymentSuccessScreen({ navigation }: PaymentSuccessScreenProps) {
+export default function PaymentSuccessScreen({ navigation, route }: PaymentSuccessScreenProps) {
+  const privateKey = route.params?.privateKey;
+
   const handleSuccess = () => {
-    navigation.navigate("Main");
-  }
+    if (privateKey) {
+      navigation.navigate('Tab', { screen: 'Main', params: { privateKey } });
+    } else {
+      // 기본 동작 또는 오류 처리
+      console.error("Private key is undefined");
+      // 필요한 경우 다른 화면으로 이동하거나 경고 메시지를 표시할 수 있습니다.
+    }
+  };
 
   return (
     <View style={styles.container}>
