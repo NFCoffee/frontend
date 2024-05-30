@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { COLOR } from "../utils/color";
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Button from "../components/Button";
 import { StackNavigationProp } from "@react-navigation/stack";
 import Web3, { AbiItem } from "web3";
@@ -210,7 +210,7 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
           <View style={styles.quickOrder}>
             <View style={styles.quickOrderText}>
               <Text style={styles.mainText}>퀵 오더</Text>
-              <View style={styles.alignCenter}>
+              <View style={{alignItems:'center'}}>
                 {quickOrderItems.map((item, index) => (
                   <TouchableOpacity key={index} onPress={() => handleOrder(item)}>
                     <Text style={styles.smallText}>{item.beverage}</Text>
@@ -224,15 +224,15 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
           </View>
           <View style={styles.transaction}>
             <View style={styles.quickOrderText}>
-              <Text style={styles.mainText}>트랜잭션 기록</Text>
-              <View style={styles.alignCenter}>
+              <Text style={[styles.mainText, {marginBottom: '2%'}]}>트랜잭션 기록</Text>
+              <ScrollView style={{height: 160}}>
                 {transactionHistory.map((item, index) => (
-                  <View key={index} style={{ marginBottom: 5 }}>
-                    <Text style={styles.smallText}>{truncateHash(item.hash)} {item.method}</Text>
-                    <Text style={styles.smallText}>{item.time}</Text>
+                  <View key={index} style={{ marginBottom: 5, borderTopWidth: 1 }}>
+                    <Text style={styles.methodText}>{item.method}</Text>
+                    <Text style={styles.smallText}>{truncateHash(item.hash)}     {item.time}</Text>
                   </View>
                 ))}
-              </View>
+              </ScrollView>
             </View>
             <Button buttonText="자세히 보기"
               style={styles.wideButtons}
@@ -298,12 +298,19 @@ const styles = StyleSheet.create({
   },
   mainText: {
     fontSize: 25, 
-    fontFamily: 'SeoulNamsanB'
+    fontFamily: 'SeoulNamsanB',
   },
   smallText: {
     fontSize: 14, 
     fontFamily: 'SeoulNamsanB',
     marginTop: '3%',
     marginLeft: '5%'
+  },
+  methodText: {
+    fontSize: 14, 
+    fontFamily: 'SeoulNamsanEB',
+    marginTop: '3%',
+    marginLeft: '5%',
+    color: COLOR.lightblue
   }
 })

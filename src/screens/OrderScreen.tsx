@@ -167,6 +167,7 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
       navigation.navigate("PaymentSuccess", {privateKey: route.params.privateKey});
     } catch (error) {
       console.log(error);
+      Alert.alert('주문 실패!');
     }
   };
   
