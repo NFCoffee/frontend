@@ -11,6 +11,7 @@ import { RouteProp } from '@react-navigation/native';
 import { NETWORK, PLZTOKEN, PLZNFT } from "../const/url";
 import PLZTokenABI from '../utils/PLZToken_ABI.json';
 import PLZNFTABI from '../utils/PLZNFT_ABI.json';
+import { usePrivateKey } from '../context/PrivateKeyContext';
 
 type RootStackParamList = {
   Main: {privateKey: string};
@@ -26,7 +27,8 @@ interface MainScreenProps {
   route: MainScreenRouteProp;
 }
 
-export default function MainScreen({ navigation, route }: MainScreenProps) {
+export default function MainScreen({ navigation }: MainScreenProps) {
+  const { privateKey } = usePrivateKey();
   const web3 = new Web3(NETWORK);
   const [isTokenReceived, setIsTokenReceived] = useState(false);
   const [lastRequestedAt, setLastRequestedAt] = useState<number | null>(null);
@@ -36,7 +38,7 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
   const [transactionHistory, setTransactionHistory] = useState<any[]>([]);
   const tokenContractAddress = PLZTOKEN; // 토큰 컨트랙트 주소
   const nftContractAddress = PLZNFT; // NFT 컨트랙트 주소
-  const userAccount = web3.eth.accounts.privateKeyToAccount(route.params.privateKey);
+  const userAccount = web3.eth.accounts.privateKeyToAccount(privateKey);
   const userAddress = userAccount.address;
   const plzTokenContract = new web3.eth.Contract(PLZTokenABI as any, PLZTOKEN);
 
@@ -112,7 +114,7 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
       const gasLimit = await web3.eth.estimateGas(txObject);
       txObject.gasLimit = web3.utils.toHex(gasLimit);
 
-      const signedTx = await web3.eth.accounts.signTransaction(txObject, route.params.privateKey);
+      const signedTx = await web3.eth.accounts.signTransaction(txObject, privateKey);
       const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 
       console.log('Request Tokens Receipt:', receipt);
@@ -131,9 +133,9 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
       await AsyncStorage.setItem('transactionHistory', JSON.stringify(transactionArray));
       setTransactionHistory(transactionArray.slice(-4)); // 최근 4개의 트랜잭션만 상태 업데이트
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error requesting tokens:', error.message);
-      console.log(`privatekey: ${route.params.privateKey}`);
+      console.log(`privatekey: ${privateKey}`);
       console.log(`account: ${account}`);
     }
   };
@@ -169,9 +171,9 @@ export default function MainScreen({ navigation, route }: MainScreenProps) {
   // 버튼 onPress 함수들
   const handleOrder = (item?: { beverage: string, englishname: string }) => { // 음료 주문
     if (item) {
-      navigation.navigate("Order", { beverage: item.beverage, englishname: item.englishname, privateKey: route.params.privateKey });
+      navigation.navigate("Order", { beverage: item.beverage, englishname: item.englishname, privateKey: privateKey });
     } else {
-      navigation.navigate("Order", { beverage: "", englishname: "", privateKey: route.params.privateKey });
+      navigation.navigate("Order", { beverage: "", englishname: "", privateKey: privateKey });
     }
     console.log(item?.beverage, item?.englishname);
   };
