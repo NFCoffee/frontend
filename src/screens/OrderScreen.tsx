@@ -14,7 +14,7 @@ import milktea from '../assets/images/KakaoTalk_Photo_2024-04-15-20-04-08_002.pn
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useFocusEffect } from '@react-navigation/native';
 import { RouteProp } from '@react-navigation/native';
-
+import { PrivateKeyProvider, usePrivateKey } from '../context/PrivateKeyContext';
 import { NETWORK, PLZTOKEN, BEVERAGEORDERING } from "../const/url";
 import PLZTokenABI from '../utils/PLZToken_ABI.json';
 import PLZOrderingABI from '../utils/Ordering_ABI.json';
@@ -22,8 +22,8 @@ import Web3 from "web3";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type RootStackParamList = {
-  Order: { beverage: string, englishname: string, privateKey: string };
-  PaymentSuccess: {privateKey: string};
+  Order: { beverage: string, englishname: string };
+  PaymentSuccess: undefined;
 };
 
 type OrderScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Order'>;
@@ -35,10 +35,11 @@ interface OrderScreenProps {
 }
 
 export default function OrderScreen({ navigation, route }: OrderScreenProps) {
+  const { privateKey } = usePrivateKey();
   const web3 = new Web3(NETWORK);
   const [selectedBeverage, setSelectedBeverage] = useState<string | null>(null);
   const [selectedEnglishBeverage, setSelectedEnglishBeverage] = useState<string | null>(null);
-  const userAccount = web3.eth.accounts.privateKeyToAccount(route.params.privateKey);
+  const userAccount = web3.eth.accounts.privateKeyToAccount(privateKey);
   const userAddress = userAccount.address;
   const plzTokenContract = new web3.eth.Contract(
     PLZTokenABI as any,
@@ -92,7 +93,7 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
       const gasLimit = await web3.eth.estimateGas(txObject);
       txObject.gasLimit = web3.utils.toHex(gasLimit);
   
-      const signedTx = await web3.eth.accounts.signTransaction(txObject, route.params.privateKey);
+      const signedTx = await web3.eth.accounts.signTransaction(txObject, privateKey);
       const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
   
       console.log('Approve Receipt:', receipt);
@@ -137,7 +138,7 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
       const gasLimit = await web3.eth.estimateGas(txObject);
       txObject.gasLimit = web3.utils.toHex(gasLimit);
   
-      const signedTx = await web3.eth.accounts.signTransaction(txObject, route.params.privateKey);
+      const signedTx = await web3.eth.accounts.signTransaction(txObject, privateKey);
       const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
   
       console.log('Beverage order Receipt:', receipt);
@@ -154,7 +155,7 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
       const transactionArray = transactionHistory ? JSON.parse(transactionHistory) : [];
       transactionArray.push(transactionRecord);
       await AsyncStorage.setItem('transactionHistory', JSON.stringify(transactionArray));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Order Error:', error.message);
       throw error;  // 오류를 상위로 전파
     }
@@ -164,7 +165,7 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
     try {
       await approve(account);  // await 키워드 추가
       await order(account);    // await 키워드 추가
-      navigation.navigate("PaymentSuccess", {privateKey: route.params.privateKey});
+      navigation.navigate("PaymentSuccess");
     } catch (error) {
       console.log(error);
       Alert.alert('주문 실패!');
@@ -276,7 +277,3 @@ const styles = StyleSheet.create({
     position: 'absolute',
   }
 })
-
-function async(privateKey: string) {
-  throw new Error("Function not implemented.");
-}

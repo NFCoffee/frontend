@@ -7,20 +7,20 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { RouteProp } from '@react-navigation/native';
+import { PrivateKeyProvider, usePrivateKey } from '../context/PrivateKeyContext';
 
 type RootStackParamList = {
-  PaymentSuccess: {privateKey: string};
-  Tab: {privateKey: string};
+  PaymentSuccess: undefined;
+  Tab: undefined;
 };
 
 type TabParamList = {
-  Main: { privateKey: string };
-  PaymentSuccess: {privateKey: string};
+  Main: undefined;
+  PaymentSuccess: undefined;
 };
 
 type PaymentSuccessScreenStackNavigationProp = StackNavigationProp<RootStackParamList, 'PaymentSuccess'>;
 type PaymentSuccessScreenTabNavigationProp = BottomTabNavigationProp<TabParamList, 'PaymentSuccess'>;
-type PaymentSuccessScreenRouteProp = RouteProp<RootStackParamList, 'PaymentSuccess'>;
 
 type PaymentSuccessScreenNavigationProp = CompositeNavigationProp<
   PaymentSuccessScreenStackNavigationProp,
@@ -29,15 +29,14 @@ type PaymentSuccessScreenNavigationProp = CompositeNavigationProp<
 
 interface PaymentSuccessScreenProps {
   navigation: PaymentSuccessScreenNavigationProp;
-  route: PaymentSuccessScreenRouteProp
 }
 
-export default function PaymentSuccessScreen({ navigation, route }: PaymentSuccessScreenProps) {
-  const privateKey = route.params?.privateKey;
+export default function PaymentSuccessScreen({ navigation }: PaymentSuccessScreenProps) {
+  const { privateKey } = usePrivateKey();
 
   const handleSuccess = () => {
     if (privateKey) {
-      navigation.navigate('Tab', { screen: 'Main', params: { privateKey } });
+      navigation.navigate('Tab');
     } else {
       // 기본 동작 또는 오류 처리
       console.error("Private key is undefined");

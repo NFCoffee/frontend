@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Dimensions, Text, TouchableOpacity, Image } from "react-native";
 import BasicScreen from "../components/BasicScreen";
 import Button from "../components/Button";
@@ -7,20 +7,22 @@ import InputField from "../components/InputField";
 import Logo from '../assets/images/planzLogo.png'
 import { StackNavigationProp } from "@react-navigation/stack";
 import SmartContractService from "../utils/SmartContractService";
+import { PrivateKeyProvider, usePrivateKey } from '../context/PrivateKeyContext';
 import Web3 from "web3";
 import { NETWORK } from "../const/url"
-import { CompositeNavigationProp } from '@react-navigation/native';
+import { CompositeNavigationProp, useFocusEffect } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
   Lostkey: undefined;
-  Tab: {privateKey: string};
+  Tab: undefined;
 };
 
 type TabParamList = {
-  Main: { privateKey: string };
+  Main: undefined;
   Login: undefined;
 };
 
@@ -39,11 +41,28 @@ interface LoginScreenProps {
 const windowHeight = Dimensions.get('window').height;
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
-  const [privateKey, setPrivateKey] = useState<string>('');
+  const { setPrivateKey } = usePrivateKey();
+  const [inputKey, setInputKey] = useState<string>('');
   const [hasNFT, setHasNFT] = useState<boolean>(false);
   const [balance, setBalance] = useState<number | null>(null);
   const web3 = new Web3(NETWORK);
-  // const account = web3.eth.accounts.privateKeyToAccount(privateKey).address;
+
+  useFocusEffect( // 해당 페이지를 벗어날 경우 인풋 초기화
+    React.useCallback(() => {
+      return () => setInputKey('');
+    }, [])
+  );
+
+  useEffect(() => { // 자동 로그인
+    const checkAutoLogin = async () => {
+      const storedPrivateKey = await AsyncStorage.getItem('privateKey');
+      if (storedPrivateKey) {
+        setPrivateKey(storedPrivateKey);
+        navigation.navigate('Tab');
+      }
+    };
+    checkAutoLogin();
+  }, []);
   
   const handleLogin = () => {
     // 추후에 API 통신이 들어갈 자리입니다.
@@ -60,7 +79,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
     // checkUserNFT();
     // fetchBalance();
-    navigation.navigate('Tab', { screen: 'Main', params: { privateKey } });
+    navigation.navigate('Tab');
   }
   
   const handleSignup = () => {
@@ -79,7 +98,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     <BasicScreen>
       <View style={styles.content}>
         <Image source={Logo} style={styles.imgStyle} />
-        <InputField placeholder="private key 입력" defaultValue="" style={styles.inputField} onChangeText={setPrivateKey} />
+        <InputField placeholder="private key 입력" defaultValue="" style={styles.inputField} onChangeText={setInputKey} />
         <Button buttonText="로그인" style={styles.button} onPress={handleLogin}/>
         <Button buttonText="회원가입" style={styles.button} onPress={handleSignup}/>
       </View>
