@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { COLOR } from "../utils/color";
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Button from "../components/Button";
 import { StackNavigationProp } from "@react-navigation/stack";
-import Web3, { AbiItem } from "web3";
+import Web3 from "web3";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { quickOrderItems } from "../const/quickOrderItems";
 import { RouteProp } from '@react-navigation/native';
@@ -11,9 +11,10 @@ import { NETWORK, PLZTOKEN, PLZNFT } from "../const/url";
 import PLZTokenABI from '../utils/PLZToken_ABI.json';
 import PLZNFTABI from '../utils/PLZNFT_ABI.json';
 import { usePrivateKey } from '../context/PrivateKeyContext';
+import { useFocusEffect } from "@react-navigation/native";
 
 type RootStackParamList = {
-  Main: {privateKey: string};
+  Main: { privateKey: string };
   Order: { beverage?: string, englishname?: string, privateKey: string };
   History: undefined;
 };
@@ -89,6 +90,7 @@ export default function MainScreen({ navigation }: MainScreenProps) {
     await requestTokens(userAddress);
     await checkBalance();
     await checkLastRequestedAt();
+    Alert.alert("토큰 수령 완료!");
   };
 
   const requestTokens = async (account: string) => {
@@ -126,10 +128,11 @@ export default function MainScreen({ navigation }: MainScreenProps) {
       };
 
       // 로컬 스토리지에 트랜잭션 기록 추가 및 상태 업데이트
-      const transactionHistory = await AsyncStorage.getItem('transactionHistory');
+      const transactionHistoryKey = `transactionHistory_${privateKey}`;
+      const transactionHistory = await AsyncStorage.getItem(transactionHistoryKey);
       const transactionArray = transactionHistory ? JSON.parse(transactionHistory) : [];
       transactionArray.push(transactionRecord);
-      await AsyncStorage.setItem('transactionHistory', JSON.stringify(transactionArray));
+      await AsyncStorage.setItem(transactionHistoryKey, JSON.stringify(transactionArray));
       setTransactionHistory(transactionArray.slice(-4)); // 최근 4개의 트랜잭션만 상태 업데이트
 
     } catch (error: any) {
@@ -139,33 +142,36 @@ export default function MainScreen({ navigation }: MainScreenProps) {
     }
   };
 
-  useEffect(() => {
-    checkBalance();
-    checkOwnership();
-    checkLastRequestedAt();
+  useFocusEffect(
+    useCallback(() => {
+      checkBalance();
+      checkOwnership();
+      checkLastRequestedAt();
 
-    const interval = setInterval(() => {
-      setTimeRemained(prevTime => {
-        if (prevTime <= 0) {
-          setIsTokenReceived(false);
-          return 0;
+      const interval = setInterval(() => {
+        setTimeRemained(prevTime => {
+          if (prevTime <= 0) {
+            setIsTokenReceived(false);
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+
+      // 트랜잭션 기록 가져오기
+      const loadTransactionHistory = async () => {
+        const transactionHistoryKey = `transactionHistory_${privateKey}`;
+        const history = await AsyncStorage.getItem(transactionHistoryKey);
+        if (history) {
+          setTransactionHistory(JSON.parse(history).slice(-4).reverse()); // 최근 4개의 트랜잭션만 상태 업데이트
         }
-        return prevTime - 1;
-      });
-    }, 1000);
+      };
 
-    // 트랜잭션 기록 가져오기
-    const loadTransactionHistory = async () => {
-      const history = await AsyncStorage.getItem('transactionHistory');
-      if (history) {
-        setTransactionHistory(JSON.parse(history).slice(-4).reverse()); // 최근 4개의 트랜잭션만 상태 업데이트
-      }
-    };
+      loadTransactionHistory();
 
-    loadTransactionHistory();
-
-    return () => clearInterval(interval);
-  }, []);
+      return () => clearInterval(interval);
+    }, [privateKey])
+  );
 
   // 버튼 onPress 함수들
   const handleOrder = (item?: { beverage: string, englishname: string }) => { // 음료 주문
@@ -196,22 +202,22 @@ export default function MainScreen({ navigation }: MainScreenProps) {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={{alignItems: 'center'}}>
+      <SafeAreaView style={{ alignItems: 'center' }}>
         <View style={styles.innerContainer}>
           <Text style={styles.text}>NFCOFFEE</Text>
           <View style={styles.tokenBox}>
             <View>
               <Text style={{ fontFamily: 'SeoulNamsan' }}>{ownsNFT ? 'NFT 보유' : 'NFT 없음'}</Text>
-              <Text style={{marginTop: '2%', fontSize: 18, fontFamily: 'SeoulNamsanEB'}}>잔여 토큰 | {balance} PLZ</Text>
+              <Text style={{ marginTop: '2%', fontSize: 18, fontFamily: 'SeoulNamsanEB' }}>잔여 토큰 | {balance} PLZ</Text>
             </View>
             <Button buttonText={isTokenReceived ? formatRemainingTime(timeRemained) : "오늘의 토큰"}
-              style={isTokenReceived ? {width: '40%', height: '100%', backgroundColor: COLOR.gray} : {width: '40%', height: '100%'}} 
-              onPress={handleToken}/>
+              style={isTokenReceived ? { width: '40%', height: '100%', backgroundColor: COLOR.gray } : { width: '40%', height: '100%' }}
+              onPress={handleToken} />
           </View>
           <View style={styles.quickOrder}>
             <View style={styles.quickOrderText}>
               <Text style={styles.mainText}>퀵 오더</Text>
-              <View style={{alignItems:'center'}}>
+              <View style={{ alignItems: 'center' }}>
                 {quickOrderItems.map((item, index) => (
                   <TouchableOpacity key={index} onPress={() => handleOrder(item)}>
                     <Text style={styles.smallText}>{item.beverage}</Text>
@@ -221,12 +227,12 @@ export default function MainScreen({ navigation }: MainScreenProps) {
             </View>
             <Button buttonText="주문하기"
               style={styles.wideButtons}
-              onPress={() => handleOrder()}/>
+              onPress={() => handleOrder()} />
           </View>
           <View style={styles.transaction}>
             <View style={styles.quickOrderText}>
-              <Text style={[styles.mainText, {marginBottom: '2%'}]}>트랜잭션 기록</Text>
-              <ScrollView style={{height: 160}}>
+              <Text style={[styles.mainText, { marginBottom: '2%' }]}>트랜잭션 기록</Text>
+              <ScrollView style={{ height: 160 }}>
                 {transactionHistory.map((item, index) => (
                   <View key={index} style={{ marginBottom: 5, borderTopWidth: 1 }}>
                     <Text style={styles.methodText}>{item.method}</Text>
@@ -237,7 +243,7 @@ export default function MainScreen({ navigation }: MainScreenProps) {
             </View>
             <Button buttonText="자세히 보기"
               style={styles.wideButtons}
-              onPress={handleHistory}/>
+              onPress={handleHistory} />
           </View>
         </View>
       </SafeAreaView>

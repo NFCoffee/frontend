@@ -3,14 +3,16 @@ import { StyleSheet, View, Text, SafeAreaView, ScrollView } from "react-native";
 import { COLOR } from "../utils/color";
 import Block from "../components/Block";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { usePrivateKey } from "../context/PrivateKeyContext";
 
 export default function TransactionScreen() {
+  const { privateKey } = usePrivateKey();
   const [transactionHistory, setTransactionHistory] = useState([]);
 
   useEffect(() => {
     const loadTransactionHistory = async () => {
       try {
-        const history = await AsyncStorage.getItem('transactionHistory');
+        const history = await AsyncStorage.getItem(`transactionHistory_${privateKey}`);
         if (history) {
           setTransactionHistory(JSON.parse(history).reverse());
         }

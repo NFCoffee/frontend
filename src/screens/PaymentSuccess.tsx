@@ -6,7 +6,6 @@ import complete from '../assets/images/completeMark.png';
 import { StackNavigationProp } from "@react-navigation/stack";
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { RouteProp } from '@react-navigation/native';
 import { PrivateKeyProvider, usePrivateKey } from '../context/PrivateKeyContext';
 
 type RootStackParamList = {
@@ -35,7 +34,7 @@ export default function PaymentSuccessScreen({ navigation }: PaymentSuccessScree
   const { privateKey } = usePrivateKey();
 
   const handleSuccess = () => {
-      navigation.navigate('Tab');
+      navigation.navigate('Main');
   };
 
   return (
