@@ -6,7 +6,6 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import Web3, { AbiItem } from "web3";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { quickOrderItems } from "../const/quickOrderItems";
-import { transactionItems } from "../const/transactionItems";
 import { RouteProp } from '@react-navigation/native';
 import { NETWORK, PLZTOKEN, PLZNFT } from "../const/url";
 import PLZTokenABI from '../utils/PLZToken_ABI.json';
@@ -159,7 +158,7 @@ export default function MainScreen({ navigation }: MainScreenProps) {
     const loadTransactionHistory = async () => {
       const history = await AsyncStorage.getItem('transactionHistory');
       if (history) {
-        setTransactionHistory(JSON.parse(history).slice(-4)); // 최근 4개의 트랜잭션만 상태 업데이트
+        setTransactionHistory(JSON.parse(history).slice(-4).reverse()); // 최근 4개의 트랜잭션만 상태 업데이트
       }
     };
 

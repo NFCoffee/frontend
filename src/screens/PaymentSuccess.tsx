@@ -35,13 +35,7 @@ export default function PaymentSuccessScreen({ navigation }: PaymentSuccessScree
   const { privateKey } = usePrivateKey();
 
   const handleSuccess = () => {
-    if (privateKey) {
       navigation.navigate('Tab');
-    } else {
-      // 기본 동작 또는 오류 처리
-      console.error("Private key is undefined");
-      // 필요한 경우 다른 화면으로 이동하거나 경고 메시지를 표시할 수 있습니다.
-    }
   };
 
   return (

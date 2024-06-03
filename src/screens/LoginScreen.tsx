@@ -64,22 +64,22 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     checkAutoLogin();
   }, []);
   
-  const handleLogin = () => {
-    // 추후에 API 통신이 들어갈 자리입니다.
-    // 현재는 즉시 메인으로 이동하게 설정해두었습니다.
-    // const checkUserNFT = async () => {
-    //   const result = await SmartContractService.userHasNFT(account, tokenId);
-    //   setHasNFT(result);
-    // };
+  const handleLogin = async () => {
+    try {
+      // Validate the private key
+      const account = web3.eth.accounts.privateKeyToAccount(inputKey);
+      web3.eth.accounts.wallet.add(account);
 
-    // const fetchBalance = async () => {
-    //     const result = await SmartContractService.balanceOf(account);
-    //     setBalance(result);
-    // };
+      // Save the private key to context and AsyncStorage
+      setPrivateKey(inputKey);
+      await AsyncStorage.setItem('privateKey', inputKey);
 
-    // checkUserNFT();
-    // fetchBalance();
-    navigation.navigate('Tab');
+      // Navigate to the main tab
+      navigation.navigate('Tab');
+    } catch (error) {
+      console.error("Invalid private key:", error);
+      // Handle the error (e.g., show an alert to the user)
+    }
   }
   
   const handleSignup = () => {
@@ -98,7 +98,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     <BasicScreen>
       <View style={styles.content}>
         <Image source={Logo} style={styles.imgStyle} />
-        <InputField placeholder="private key 입력" defaultValue="" style={styles.inputField} onChangeText={setInputKey} />
+        <InputField placeholder="private key 입력" defaultValue={inputKey} style={styles.inputField} onChangeText={setInputKey} />
         <Button buttonText="로그인" style={styles.button} onPress={handleLogin}/>
         <Button buttonText="회원가입" style={styles.button} onPress={handleSignup}/>
       </View>
