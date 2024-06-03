@@ -59,7 +59,6 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
       setSelectedEnglishBeverage(null);
     }
   }, [route.params?.beverage]);
-  
 
   useFocusEffect(
     useCallback(() => {
@@ -70,7 +69,7 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
       };
     }, [])
   );
-  
+
   const approve = async(account: string) => {
     try {
       const txCount = await web3.eth.getTransactionCount(account);
@@ -106,10 +105,11 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
       };
 
       // 로컬 스토리지에 트랜잭션 기록 추가 및 상태 업데이트
-      const transactionHistory = await AsyncStorage.getItem('transactionHistory');
+      const transactionHistoryKey = `transactionHistory_${privateKey}`;
+      const transactionHistory = await AsyncStorage.getItem(transactionHistoryKey);
       const transactionArray = transactionHistory ? JSON.parse(transactionHistory) : [];
       transactionArray.push(transactionRecord);
-      await AsyncStorage.setItem('transactionHistory', JSON.stringify(transactionArray));
+      await AsyncStorage.setItem(transactionHistoryKey, JSON.stringify(transactionArray));
     } catch (error: any) {
       console.error('Approve Error:', error.message);
       throw error;  // 오류를 상위로 전파
@@ -151,10 +151,11 @@ export default function OrderScreen({ navigation, route }: OrderScreenProps) {
       };
 
       // 로컬 스토리지에 트랜잭션 기록 추가 및 상태 업데이트
-      const transactionHistory = await AsyncStorage.getItem('transactionHistory');
+      const transactionHistoryKey = `transactionHistory_${privateKey}`;
+      const transactionHistory = await AsyncStorage.getItem(transactionHistoryKey);
       const transactionArray = transactionHistory ? JSON.parse(transactionHistory) : [];
       transactionArray.push(transactionRecord);
-      await AsyncStorage.setItem('transactionHistory', JSON.stringify(transactionArray));
+      await AsyncStorage.setItem(transactionHistoryKey, JSON.stringify(transactionArray));
     } catch (error: any) {
       console.error('Order Error:', error.message);
       throw error;  // 오류를 상위로 전파
