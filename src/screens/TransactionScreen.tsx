@@ -12,7 +12,7 @@ export default function TransactionScreen() {
       try {
         const history = await AsyncStorage.getItem('transactionHistory');
         if (history) {
-          setTransactionHistory(JSON.parse(history));
+          setTransactionHistory(JSON.parse(history).reverse());
         }
       } catch (error) {
         console.error('Error loading transaction history:', error);
