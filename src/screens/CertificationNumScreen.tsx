@@ -11,6 +11,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import CryptoJS from "crypto-js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+
 const windowHeight = Dimensions.get('window').height;
 type RootStackParamList = {
   Certification: { email: string; employeeId: string };
@@ -32,20 +33,8 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
   const [isCertified, setIsCertified] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(true);  // 처음에는 버튼을 비활성화 상태로 설정
   const [privateKey, setPrivateKey] = useState("");
+  const [hashedPrivateKey, setHashedPrivateKey] = useState("");
   const [address, setAddress] = useState("");
-  const [storedPin, setStoredPin] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchStoredPin = async () => {
-      try {
-        const pin = await AsyncStorage.getItem('userPin');
-        setStoredPin(pin);
-      }
-      catch (error) {
-        Alert.alert("오류", "PIN번호 못 가져옴");
-      }
-    }
-  }, []);
   
   const handleCertificationNumChange = (text: string) => {
     setCertificationNum(text);
@@ -76,13 +65,14 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
           const account = web3.eth.accounts.create(); // 계정 생성
           const generatedPrivateKey = account.privateKey; // 생성된 계정의 private Key
           const generatedAddress = account.address; // 생성된 계정 주소
+          const hashedPrivateKey = crypto.createHash('sha256').update(generatedPrivateKey).digest('hex');
 
           // state 상태 바꿔주고
           setIsCertified(true);
           setButtonDisabled(false); 
-          setPrivateKey(generatedPrivateKey);
           setAddress(generatedAddress);
-
+          setHashedPrivateKey(hashedPrivateKey);
+          
           Alert.alert("인증 완료", "인증이 완료되었습니다!");
 
           // 서버로 보내기
@@ -101,7 +91,7 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
           // 계정 생성 후 잘 보냈다? state update
           // if (walletResponse.ok) {
           if (true) {
-            console.log(`privateKey: ${generatedPrivateKey}`);
+            console.log(`privateKey: ${hashedPrivateKey}`);
             console.log(`address: ${generatedAddress}`);
           } else {
             console.error();
@@ -110,7 +100,8 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
         else {
           Alert.alert("오류", "인증 실패. 다시 시도하세요.");
         }
-      } catch (error) {
+      } 
+      catch (error) {
         console.error(error);
         Alert.alert("오류", "다시 시도하세요.");
       }
@@ -123,6 +114,7 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
     setButtonDisabled(true);
     setPrivateKey(""); // 재전송 누르면 다시 초기화
     setAddress("");
+    setHashedPrivateKey("");
   };
 
   const handleSignUpComplete = async () => {

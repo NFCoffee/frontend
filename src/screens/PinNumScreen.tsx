@@ -1,76 +1,91 @@
-import React, { useRef, useState } from "react";
-import { StyleSheet, Text, View, Dimensions, Alert, TouchableOpacity } from "react-native";
+import React, { useRef, useState, useEffect } from "react";
+import { StyleSheet, Text, View, Dimensions, Alert, SafeAreaView, StatusBar, TouchableOpacity } from "react-native";
 import PinView from 'react-native-pin-view';
-import { COLOR } from "../utils/color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { COLOR } from "../utils/color";
 
 const windowHeight = Dimensions.get('window').height;
 
-export default function LoginScreen() {
-    const pinView = useRef<PinView>(null); // ref 초기화
+const PinNumScreen = () => {
+    const pinView = useRef(null); // ref 초기화
     const [pin, setPin] = useState("");
     const [step, setStep] = useState(1); // 단계 상태 추가
     const [firstPin, setFirstPin] = useState(""); // 첫 번째 PIN 저장
+    const [hashedPrivateKey, setHashedPrivateKey] = useState(""); // 해싱된 private key 저장
 
-    const handleComplete = async (enteredPin: string) => {
-        if (step === 1) {
-            // 첫 번째 PIN 입력
-            setFirstPin(enteredPin);
-            setStep(2);
-            pinView.current.clear(); // PINView 초기화
-        } else if (step === 2) {
-            // 두 번째 PIN 입력
-            if (enteredPin === firstPin) {
-                try {
-                    await AsyncStorage.setItem('userPin', enteredPin);
-                    Alert.alert("완료", "PIN 번호가 저장되었습니다.");
-                } catch (error) {
-                    Alert.alert("오류", "PIN 번호를 저장하는 중 오류가 발생했습니다.");
-                }
-            } else {
-                Alert.alert("오류", "PIN 번호가 일치하지 않습니다. 다시 시도해 주세요.");
+    useEffect(() => {
+        if (pin.length === 6) {
+            if (step === 1) {
+                // 첫 번째 PIN 입력
+                setFirstPin(pin);
+                setStep(2);
+                setPin(""); // PIN 상태 초기화
+                pinView.current.clearAll(); // PINView 초기화
             }
-            setStep(1);
-            setFirstPin("");
-            pinView.current.clear(); // PINView 초기화
-        }
-    };
+            else if (step === 2) {
+                // 두 번째 PIN 입력
+                if (pin === firstPin) {
+                    AsyncStorage.getItem('hashedPrivateKey').then((value) => {
+                        if (value) {
+                            setHashedPrivateKey(value);
+                            AsyncStorage.setItem(pin, value).then(() => {
+                                Alert.alert("완료", "PIN과 해싱된 privateKey가 저장됨.");
+                                pinView.current.clearAll();
+                            }).catch(error => {
+                                Alert.alert("오류", "저장과정에서 오류 발생");
+                            });
+                        } else Alert.alert("오류", "해싱된 privateKey를 가져오는 중 오류가 발생했습니다.");
+                    }).catch(error => {Alert.alert("오류", "해싱된 privatekey를 가져오는데 실패")});
+                } 
+                else {
+                    Alert.alert("오류", "PIN 번호가 일치하지 않습니다. 다시 시도해 주세요.");
+                    pinView.current.clearAll(); // PINView 초기화
+                }
+                setStep(1);
+                setFirstPin("");
+                setPin(""); // PIN 상태 초기화
+            }
+        }    
+    }, [pin]);
 
     const handleClear = () => {
         if (pinView.current) {
             pinView.current.clear();
             setPin("");
+            setStep(1);
+            setFirstPin("");
         }
     };
 
     return (
         <>
-            <View style={styles.container}>
+            <StatusBar barStyle="light-content" />
+            <SafeAreaView style={styles.container}>
                 <Text style={styles.mainText}>PIN 번호 생성</Text>
                 <Text style={styles.subText}>
-                    {step === 1 ? "로그인에 사용할 번호입니다." : "다시 한번 입력 해주세요."}
+                    {step === 1 ? "로그인에 사용할 번호입니다." : "같은 번호를 다시 입력 해주세요."}
                 </Text>
-            </View>
-            <View style={styles.pinContainer}>
-                <PinView
-                    ref={pinView}
-                    onComplete={handleComplete}
-                    pinLength={6}
-                    inputSize={32}
-                    buttonSize={60}
-                    onValueChange={value => setPin(value)}
-                    inputAreaStyle={styles.pinInputArea}
-                    buttonAreaStyle={styles.pinButtonArea}
-                    buttonTextStyle={styles.pinButtonText}
-                    inputViewEmptyStyle={styles.pinInputViewEmpty}
-                    inputViewFilledStyle={styles.pinInputViewFilled}
-                    customRightButton={
-                        <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
-                            <Text style={styles.clearButtonText}>X</Text>
-                        </TouchableOpacity>
-                    }
-                />
-            </View>
+                <View style={styles.pinContainer}>
+                    <PinView
+                        ref={pinView}
+                        onComplete={() => {}}
+                        pinLength={6}
+                        inputSize={32}
+                        buttonSize={60}
+                        onValueChange={value => setPin(value)}
+                        buttonAreaStyle={styles.pinButtonArea}
+                        inputAreaStyle={styles.pinInputArea}
+                        buttonTextStyle={styles.pinButtonText}
+                        inputViewEmptyStyle={styles.pinInputViewEmpty}
+                        inputViewFilledStyle={styles.pinInputViewFilled}
+                        customRightButton={
+                            <TouchableOpacity onPress={handleClear}>
+                                <Text style={styles.pinButtonText}>{"삭제"}</Text>
+                            </TouchableOpacity>
+                        }
+                    />
+                </View>
+            </SafeAreaView>
         </>
     );
 }
@@ -78,14 +93,15 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
     container: {
         alignItems: "center",
-        backgroundColor: COLOR.background,
+        flex: 1,
         zIndex: 1,
+        backgroundColor: COLOR.background,
     },
     mainText: {
         color: COLOR.dark,
         fontSize: 35,
         fontWeight: '500',
-        top: windowHeight * 0.25,
+        top: windowHeight * 0.2,
         fontFamily: 'SeoulNamsanB',
     },
     subText: {
@@ -97,13 +113,15 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: COLOR.background,
+        top: windowHeight * 0.2,
     },
     pinInputArea: {
-        marginTop: '40%',
+        marginTop: '30%',
+        bottom: windowHeight * 0.13,
     },
     pinButtonArea: {
         marginTop: '13%',
+        bottom: windowHeight * 0.13,
     },
     pinButtonText: {
         color: COLOR.dark,
@@ -126,3 +144,5 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
+
+export default PinNumScreen;
