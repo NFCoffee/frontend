@@ -3,13 +3,12 @@ import { StyleSheet, View, Dimensions, Text, TouchableOpacity, Image } from "rea
 import BasicScreen from "../components/BasicScreen";
 import Button from "../components/Button";
 import { COLOR } from "../utils/color";
-import InputField from "../components/InputField";
+import InputField from "../components/InputField"; // InputField 컴포넌트 임포트
 import Logo from '../assets/images/planzLogo.png'
 import { StackNavigationProp } from "@react-navigation/stack";
-import SmartContractService from "../utils/SmartContractService";
 import { PrivateKeyProvider, usePrivateKey } from '../context/PrivateKeyContext';
 import Web3 from "web3";
-import { NETWORK } from "../const/url"
+import { NETWORK } from "../const/url";
 import { CompositeNavigationProp, useFocusEffect } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -43,8 +42,8 @@ const windowHeight = Dimensions.get('window').height;
 export default function LoginScreen({ navigation }: LoginScreenProps) {
   const { setPrivateKey } = usePrivateKey();
   const [inputKey, setInputKey] = useState<string>('');
-  const [hasNFT, setHasNFT] = useState<boolean>(false);
-  const [balance, setBalance] = useState<number | null>(null);
+  const [hasStoredKey, setHasStoredKey] = useState<boolean>(false); // 상태 추가
+  const [usePrivateKeyInput, setUsePrivateKeyInput] = useState<boolean>(false);
   const web3 = new Web3(NETWORK);
 
   useFocusEffect( // 해당 페이지를 벗어날 경우 인풋 초기화
@@ -63,22 +62,32 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     };
     checkAutoLogin();
   }, []);
+
+  useEffect(() => { // 해싱된 private key 확인
+    const checkStoredKey = async () => {
+      const storedPrivateKey = await AsyncStorage.getItem('privateKey');
+      if (storedPrivateKey) {
+        setHasStoredKey(true);
+      }
+    };
+    checkStoredKey();
+  }, []);
   
   const handleLogin = async () => {
     try {
-      // Validate the private key
+      // private key 검증
       const account = web3.eth.accounts.privateKeyToAccount(inputKey);
       web3.eth.accounts.wallet.add(account);
 
-      // Save the private key to context and AsyncStorage
+      // private key를 context와 AsyncStorage에 저장
       setPrivateKey(inputKey);
       await AsyncStorage.setItem('privateKey', inputKey);
 
-      // Navigate to the main tab
+      // 메인 탭으로 이동
       navigation.navigate('Tab');
     } catch (error) {
-      console.error("Invalid private key:", error);
-      // Handle the error (e.g., show an alert to the user)
+      console.error("유효하지 않은 private key:", error);
+      // 오류 처리 (예: 사용자에게 알림 표시)
     }
   }
   
@@ -92,21 +101,28 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
   return (
     <>
-    <View style={styles.container}>
-      <Text style={styles.mainText}>NFCOFFEE</Text>
-    </View>
-    <BasicScreen>
-      <View style={styles.content}>
-        <Image source={Logo} style={styles.imgStyle} />
-        <InputField placeholder="private key 입력" defaultValue={inputKey} style={styles.inputField} onChangeText={setInputKey} />
-        <Button buttonText="로그인" style={styles.button} onPress={handleLogin}/>
-        <Button buttonText="회원가입" style={styles.button} onPress={handleSignup}/>
+      <View style={styles.container}>
+        <Text style={styles.mainText}>NFCOFFEE</Text>
       </View>
-    </BasicScreen>
-    <TouchableOpacity style={styles.bottomButton} onPress={handleLostkey}>
-        <Text style={styles.bottomButtonText}>private key 분실신고</Text>
+      <BasicScreen>
+        <View style={styles.content}>
+          <Image source={Logo} style={styles.imgStyle} />
+          <InputField 
+            placeholder={usePrivateKeyInput ? "private key 입력" : (hasStoredKey ? "PIN 입력" : "private key 입력")}
+            defaultValue={inputKey} 
+            style={styles.inputField} 
+            onChangeText={setInputKey}
+          />
+          <Button buttonText="로그인" style={styles.button} onPress={handleLogin}/>
+          <Button buttonText="회원가입" style={styles.button} onPress={handleSignup}/>
+        </View>
+      </BasicScreen>
+      <TouchableOpacity style={styles.bottomButton} onPress={handleLostkey}>
+        <Text style={styles.bottomButtonText}>
+          {hasStoredKey ? "PrivateKey로 로그인 하기" : "private key 분실신고"}
+        </Text>
         <View style={styles.bottomButtonUnderline} />
-    </TouchableOpacity>
+      </TouchableOpacity>
     </>
   );
 }
