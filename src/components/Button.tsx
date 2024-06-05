@@ -1,27 +1,28 @@
 // Button.tsx
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, ViewStyle, Dimensions } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, TouchableOpacityProps, Dimensions } from 'react-native';
 import { COLOR } from '../utils/color';
 
-interface ButtonProps {
+interface ButtonProps extends TouchableOpacityProps {
   buttonText: string;
-  style?: ViewStyle;
-  onPress?: () => void; // Add onPress prop
 }
 
-const Button: React.FC<ButtonProps> = ({ buttonText, style, onPress }) => {
+const Button: React.FC<ButtonProps> = ({ buttonText, style, ...props }) => {
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
 
   return (
-    <TouchableOpacity style={[
+    <TouchableOpacity
+      style={[
         styles.touchop,
         {
-          width: windowWidth * 0.75, // 80% of window width
+          width: windowWidth * 0.75, // 75% of window width
           height: windowHeight * 0.065, // 6.5% of window height
         },
         style,
-      ]} onPress={onPress}>
+      ]}
+      {...props} // Spread props to TouchableOpacity
+    >
       <Text style={styles.text}>{buttonText}</Text>
     </TouchableOpacity>
   );
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: 'SeoulNamsanB',
-    fontSize: 22,
+    fontSize: 20,
     color: 'white',
   },
 });
