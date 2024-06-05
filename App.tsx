@@ -13,13 +13,14 @@ import OrderScreen from "./src/screens/OrderScreen";
 import PaymentScreen from "./src/screens/PaymentScreen";
 import PaymentSuccessScreen from "./src/screens/PaymentSuccess";
 import { PrivateKeyProvider } from './src/context/PrivateKeyContext';
+import PinNumScreen from './src/screens/PinNumScreen';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return ( 
     <>
-    <PrivateKeyProvider>
+    {/* <PrivateKeyProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login" component={LoginScreen} />
@@ -35,7 +36,8 @@ export default function App() {
           <Stack.Screen name="Tab" component={TabNavigation} />
         </Stack.Navigator>
       </NavigationContainer>
-    </PrivateKeyProvider>
+    </PrivateKeyProvider> */}
+      <PinNumScreen></PinNumScreen>
     </>
   )
 }

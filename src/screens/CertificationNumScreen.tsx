@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Dimensions, Text, TouchableOpacity, Alert } from "react-native";
 import BasicScreen from "../components/BasicScreen";
 import Button from "../components/Button";
@@ -8,6 +8,8 @@ import Web3 from "web3";
 import { RouteProp } from "@react-navigation/native";
 import { NETWORK, URL } from "../const/url";
 import { StackNavigationProp } from "@react-navigation/stack";
+import CryptoJS from "crypto-js";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const windowHeight = Dimensions.get('window').height;
 type RootStackParamList = {
@@ -31,7 +33,20 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
   const [buttonDisabled, setButtonDisabled] = useState(true);  // 처음에는 버튼을 비활성화 상태로 설정
   const [privateKey, setPrivateKey] = useState("");
   const [address, setAddress] = useState("");
+  const [storedPin, setStoredPin] = useState<string | null>(null);
 
+  useEffect(() => {
+    const fetchStoredPin = async () => {
+      try {
+        const pin = await AsyncStorage.getItem('userPin');
+        setStoredPin(pin);
+      }
+      catch (error) {
+        Alert.alert("오류", "PIN번호 못 가져옴");
+      }
+    }
+  }, []);
+  
   const handleCertificationNumChange = (text: string) => {
     setCertificationNum(text);
     setButtonDisabled(text.trim() === "");
@@ -91,7 +106,8 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
           } else {
             console.error();
           }
-        } else {
+        } 
+        else {
           Alert.alert("오류", "인증 실패. 다시 시도하세요.");
         }
       } catch (error) {

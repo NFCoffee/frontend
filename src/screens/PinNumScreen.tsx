@@ -6,14 +6,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const windowHeight = Dimensions.get('window').height;
 
-const ClearButton = ({ onPress }) => (
-    <TouchableOpacity style={styles.clearButton} onPress={onPress}>
-        <Text style={styles.clearButtonText}>X</Text>
-    </TouchableOpacity>
-);
-
 export default function LoginScreen() {
-    const pinView = useRef<any>(null); // ref 초기화
+    const pinView = useRef<PinView>(null); // ref 초기화
     const [pin, setPin] = useState("");
     const [step, setStep] = useState(1); // 단계 상태 추가
     const [firstPin, setFirstPin] = useState(""); // 첫 번째 PIN 저장
@@ -23,12 +17,11 @@ export default function LoginScreen() {
             // 첫 번째 PIN 입력
             setFirstPin(enteredPin);
             setStep(2);
-            setPin(""); // 상태 초기화
+            pinView.current.clear(); // PINView 초기화
         } else if (step === 2) {
             // 두 번째 PIN 입력
             if (enteredPin === firstPin) {
                 try {
-                    // PIN 저장 예제
                     await AsyncStorage.setItem('userPin', enteredPin);
                     Alert.alert("완료", "PIN 번호가 저장되었습니다.");
                 } catch (error) {
@@ -39,13 +32,15 @@ export default function LoginScreen() {
             }
             setStep(1);
             setFirstPin("");
-            setPin(""); // 상태 초기화
+            pinView.current.clear(); // PINView 초기화
         }
     };
 
     const handleClear = () => {
-        pinView.current?.clear();
-        setPin("");
+        if (pinView.current) {
+            pinView.current.clear();
+            setPin("");
+        }
     };
 
     return (
@@ -69,7 +64,11 @@ export default function LoginScreen() {
                     buttonTextStyle={styles.pinButtonText}
                     inputViewEmptyStyle={styles.pinInputViewEmpty}
                     inputViewFilledStyle={styles.pinInputViewFilled}
-                    customRightButton={() => <ClearButton onPress={handleClear} />}
+                    customRightButton={
+                        <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
+                            <Text style={styles.clearButtonText}>X</Text>
+                        </TouchableOpacity>
+                    }
                 />
             </View>
         </>
