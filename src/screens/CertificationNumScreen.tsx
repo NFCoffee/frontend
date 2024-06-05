@@ -8,7 +8,6 @@ import Web3 from "web3";
 import { RouteProp } from "@react-navigation/native";
 import { NETWORK, URL } from "../const/url";
 import { StackNavigationProp } from "@react-navigation/stack";
-import CryptoJS from "crypto-js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const windowHeight = Dimensions.get('window').height;
