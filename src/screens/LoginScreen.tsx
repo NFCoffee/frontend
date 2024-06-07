@@ -43,7 +43,6 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const { setPrivateKey } = usePrivateKey();
   const [inputKey, setInputKey] = useState<string>('');
   const [hasStoredKey, setHasStoredKey] = useState<boolean>(false); // 상태 추가
-  const [usePrivateKeyInput, setUsePrivateKeyInput] = useState<boolean>(false);
   const web3 = new Web3(NETWORK);
 
   useFocusEffect( // 해당 페이지를 벗어날 경우 인풋 초기화
@@ -108,7 +107,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
         <View style={styles.content}>
           <Image source={Logo} style={styles.imgStyle} />
           <InputField 
-            placeholder={usePrivateKeyInput ? "private key 입력" : (hasStoredKey ? "PIN 입력" : "private key 입력")}
+            placeholder={ "private key 입력" }
             defaultValue={inputKey} 
             style={styles.inputField} 
             onChangeText={setInputKey}
