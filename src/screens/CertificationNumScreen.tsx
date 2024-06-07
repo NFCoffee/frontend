@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, Dimensions, Text, TouchableOpacity, Alert } from "react-native";
 import BasicScreen from "../components/BasicScreen";
 import Button from "../components/Button";
@@ -8,14 +8,14 @@ import Web3 from "web3";
 import { RouteProp } from "@react-navigation/native";
 import { NETWORK, URL } from "../const/url";
 import { StackNavigationProp } from "@react-navigation/stack";
-import CryptoJS from "crypto-js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
 const windowHeight = Dimensions.get('window').height;
+
 type RootStackParamList = {
   Certification: { email: string; employeeId: string };
   Privatekey: { privateKey: string };
+  PinNum: { privateKey: string };
 };
 
 type CertificationNumScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Certification'>;
@@ -27,27 +27,51 @@ interface CertificationNumScreenProps {
 }
 
 export default function CertificationNumScreen({ route, navigation }: CertificationNumScreenProps) {
-  const { email, employeeId } = route.params; // 이메일, 사번 받기
+  const { email, employeeId } = route.params;
 
   const [certificationNum, setCertificationNum] = useState("");
   const [isCertified, setIsCertified] = useState(false);
-  const [buttonDisabled, setButtonDisabled] = useState(true);  // 처음에는 버튼을 비활성화 상태로 설정
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [address, setAddress] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const [hashedPrivateKey, setHashedPrivateKey] = useState("");
-  const [address, setAddress] = useState("");
-  
+
   const handleCertificationNumChange = (text: string) => {
     setCertificationNum(text);
     setButtonDisabled(text.trim() === "");
   };
 
+  const generateSalt = (length: number) => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*';
+    let result = '';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  };
+
+  const shuffleString = (str: string) => {
+    const arr = str.split('');
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr.join('');
+  };
+
+  const combineAndShuffle = (privateKey: string, salt: string) => {
+    const combined = privateKey + salt;
+    return shuffleString(combined);
+  };
+
   const handleCertificationComplete = async () => {
     if (certificationNum.trim() === "") {
-      Alert.alert("오류", "인증번호를 입력하세요"); // 인증번호 칸 비어있을 때 오류메세지 출력
+      Alert.alert("오류", "인증번호를 입력하세요");
     } else {
       try {
-        // const response = await fetch(`${URL}/api/v1/finish-sign`, { // URL에 fetch
-        //   method: 'POST', // 입력받은 정보 전송
+        // const response = await fetch(`${URL}/api/v1/finish-sign`, {
+        //   method: 'POST',
         //   headers: {
         //     'Content-Type': 'application/json',
         //   },
@@ -58,24 +82,27 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
         //   }),
         // });
 
-        // if (response.ok) { // 인증완료 되면
+        // if (response.ok) {
         if (true) {
-          // 계정 생성 후 private key 보내기
           const web3 = new Web3(NETWORK);
-          const account = web3.eth.accounts.create(); // 계정 생성
-          const generatedPrivateKey = account.privateKey; // 생성된 계정의 private Key
-          const generatedAddress = account.address; // 생성된 계정 주소
-          const hashedPrivateKey = crypto.createHash('sha256').update(generatedPrivateKey).digest('hex');
+          const account = web3.eth.accounts.create();
+          const generatedPrivateKey = account.privateKey;
+          const generatedAddress = account.address;
+          const salt = generateSalt(16);
+          const shuffledPrivateKey = combineAndShuffle(generatedPrivateKey, salt);
 
-          // state 상태 바꿔주고
           setIsCertified(true);
-          setButtonDisabled(false); 
+          setButtonDisabled(false);
           setAddress(generatedAddress);
-          setHashedPrivateKey(hashedPrivateKey);
-          
+          setPrivateKey(generatedPrivateKey);
+          setHashedPrivateKey(shuffledPrivateKey);
+
+          // Save salt and shuffledPrivateKey to AsyncStorage for later use
+          await AsyncStorage.setItem('salt', salt);
+          await AsyncStorage.setItem('hashedPrivateKey', shuffledPrivateKey);
+
           Alert.alert("인증 완료", "인증이 완료되었습니다!");
 
-          // 서버로 보내기
           // const walletResponse = await fetch(`${URL}/api/v1/wallet`, {
           //   method: 'POST',
           //   headers: {
@@ -88,20 +115,17 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
           //   }),
           // });
 
-          // 계정 생성 후 잘 보냈다? state update
           // if (walletResponse.ok) {
           if (true) {
-            console.log(`privateKey: ${hashedPrivateKey}`);
+            console.log(`hashedPrivateKey: ${shuffledPrivateKey}`);
             console.log(`address: ${generatedAddress}`);
           } else {
-            console.error();
+            console.error("Error saving to server");
           }
-        } 
-        else {
+        } else {
           Alert.alert("오류", "인증 실패. 다시 시도하세요.");
         }
-      } 
-      catch (error) {
+      } catch (error) {
         console.error(error);
         Alert.alert("오류", "다시 시도하세요.");
       }
@@ -112,14 +136,14 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
     Alert.alert("알림", "인증번호가 재전송되었습니다.");
     setIsCertified(false);
     setButtonDisabled(true);
-    setPrivateKey(""); // 재전송 누르면 다시 초기화
+    setPrivateKey("");
     setAddress("");
     setHashedPrivateKey("");
   };
 
   const handleSignUpComplete = async () => {
     if (isCertified) {
-      navigation.navigate('Privatekey', { privateKey });
+      navigation.navigate('PinNum', { privateKey });
     } else {
       Alert.alert("오류", "먼저 인증을 완료하세요");
     }
