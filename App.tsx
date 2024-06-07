@@ -63,7 +63,6 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return ( 
-    <>
     <PrivateKeyProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
@@ -71,7 +70,7 @@ export default function App() {
           <Stack.Screen name="Certification" component={CertificationNumScreen} />
           <Stack.Screen name="Signup" component={MembershipScreen} />
           <Stack.Screen name="Privatekey" component={PrivateKeyScreen} />
-          <Stack.Screen name="PinNumScreen" component={PinNumScreen} />
+          <Stack.Screen name="PinNum" component={PinNumScreen} />
           <Stack.Screen name="NFT" component={NFTScreen} />
           <Stack.Screen name="Lostkey" component={LostKeyScreen} />
           <Stack.Screen name="History" component={TransactionScreen} />
@@ -82,6 +81,5 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </PrivateKeyProvider>
-    </>
   )
 }
