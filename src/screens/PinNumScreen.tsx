@@ -9,18 +9,18 @@ import { StackNavigationProp } from "@react-navigation/stack";
 const windowHeight = Dimensions.get('window').height;
 
 type RootStackParamList = {
-  Login: undefined;
-  Signup: undefined;
-  Order: undefined;
-  PinNum: { isLogin: boolean };
+    Login: undefined;
+    Signup: undefined;
+    Order: undefined;
+    PinNum: { privateKey : string };
 };
 
 type PinNumScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 type PinNumScreenRouteProp = RouteProp<RootStackParamList, 'PinNum'>;
 
 interface PinNumScreenProps {
-  navigation: PinNumScreenNavigationProp;
-  route: PinNumScreenRouteProp;
+    navigation: PinNumScreenNavigationProp;
+    route: PinNumScreenRouteProp;
 }
 
 const PinNumScreen: React.FC<PinNumScreenProps> = ({ route, navigation }) => {
@@ -28,58 +28,34 @@ const PinNumScreen: React.FC<PinNumScreenProps> = ({ route, navigation }) => {
     const [pin, setPin] = useState("");
     const [step, setStep] = useState(1); // 단계 상태 추가
     const [firstPin, setFirstPin] = useState(""); // 첫 번째 PIN 저장
-    const [hashedPrivateKey, setHashedPrivateKey] = useState(""); // 해싱된 private key 저장
-    const isLogin = route.params?.isLogin || false; // 현재 화면이 로그인인지 여부
+    const privateKey = route.params.privateKey;
 
     useEffect(() => {
         if (pin.length === 6) {
-            if (isLogin) {
-                // 로그인 처리
-                AsyncStorage.getItem('userPin').then((storedPin) => {
-                    if (storedPin === pin) {
-                        Alert.alert("성공", "로그인 성공");
-                        navigation.navigate("Order");
-                    } else {
-                        Alert.alert("오류", "유효하지 않은 PIN 번호입니다.");
+            // PIN 생성 처리
+            if (step === 1) {
+                setFirstPin(pin);
+                setStep(2);
+                setPin(""); // PIN 상태 초기화
+                pinView.current.clearAll(); // PINView 초기화
+            } 
+            else if (step === 2) {
+                // 두 번째 PIN 입력
+                if (pin === firstPin) {
+                    AsyncStorage.setItem(pin, privateKey).then(() => {
+                        Alert.alert("완료", "PIN과 해싱된 privateKey가 저장됨.");
                         pinView.current.clearAll();
-                    }
-                }).catch(error => {
-                    Alert.alert("오류", "로그인 과정에서 오류 발생");
-                    pinView.current.clearAll();
-                });
-            } else {
-                // PIN 생성 처리
-                if (step === 1) {
-                    setFirstPin(pin);
-                    setStep(2);
-                    setPin(""); // PIN 상태 초기화
+                        navigation.navigate('Login');
+                    }).catch(error => {
+                        Alert.alert("오류", "저장과정에서 오류 발생");
+                    });
+                } else {
+                    Alert.alert("오류", "PIN 번호가 일치하지 않습니다. 다시 시도해 주세요.");
                     pinView.current.clearAll(); // PINView 초기화
-                } else if (step === 2) {
-                    // 두 번째 PIN 입력
-                    if (pin === firstPin) {
-                        AsyncStorage.getItem('hashedPrivateKey').then((value) => {
-                            if (value) {
-                                setHashedPrivateKey(value);
-                                AsyncStorage.setItem(pin, value).then(() => {
-                                    Alert.alert("완료", "PIN과 해싱된 privateKey가 저장됨.");
-                                    pinView.current.clearAll();
-                                }).catch(error => {
-                                    Alert.alert("오류", "저장과정에서 오류 발생");
-                                });
-                            } else {
-                                Alert.alert("오류", "해싱된 privateKey를 가져오는 중 오류가 발생했습니다.");
-                            }
-                        }).catch(error => {
-                            Alert.alert("오류", "해싱된 privatekey를 가져오는데 실패");
-                        });
-                    } else {
-                        Alert.alert("오류", "PIN 번호가 일치하지 않습니다. 다시 시도해 주세요.");
-                        pinView.current.clearAll(); // PINView 초기화
-                    }
-                    setStep(1);
-                    setFirstPin("");
-                    setPin(""); // PIN 상태 초기화
                 }
+                setStep(1);
+                setFirstPin("");
+                setPin(""); // PIN 상태 초기화
             }
         }
     }, [pin]);
@@ -97,9 +73,9 @@ const PinNumScreen: React.FC<PinNumScreenProps> = ({ route, navigation }) => {
         <>
             <StatusBar barStyle="light-content" />
             <SafeAreaView style={styles.container}>
-                <Text style={styles.mainText}>{isLogin ? "로그인" : "PIN 번호 생성"}</Text>
+                <Text style={styles.mainText}>{ "PIN 번호 생성" }</Text>
                 <Text style={styles.subText}>
-                    {isLogin ? "PIN번호를 입력하세요" : (step === 1 ? "로그인에 사용할 번호입니다." : "같은 번호를 다시 입력 해주세요.")}
+                    {step === 1 ? "로그인에 사용할 번호입니다." : "같은 번호를 다시 입력 해주세요."}
                 </Text>
                 <View style={styles.pinContainer}>
                     <PinView
