@@ -42,27 +42,12 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
   };
 
   const generateSalt = (length: number) => {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*';
-    let result = '';
-    const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  };
-
-  const shuffleString = (str: string) => {
-    const arr = str.split('');
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr.join('');
+    const characters = 'PLzNf@Cc&O%F*f&e3E21';
+    return characters;
   };
 
   const combineAndShuffle = (privateKey: string, salt: string) => {
-    const combined = privateKey + salt;
-    return shuffleString(combined);
+    return privateKey + salt;
   };
 
   const handleCertificationComplete = async () => {
