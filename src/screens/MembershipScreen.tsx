@@ -51,13 +51,12 @@ export default function MembershipScreen({ navigation }: MembershipScreenProps) 
         },
         body: JSON.stringify(requestBody),
       });
-      const data = await response.json();
-      console.log('Success:', data);
+      if(response.ok) {
+        navigation.navigate("Certification", { email, employeeId });
+      }
     } catch (error) {
       console.error('Error:', error);
     }
-
-    navigation.navigate("Certification", { email, employeeId });
   };
 
   return (
