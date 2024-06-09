@@ -52,22 +52,25 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     }
   };
 
-  const checkAutoLogin = async () => {
-    const storedPrivateKey = await AsyncStorage.getItem('privateKey');
-    if (storedPrivateKey) {
-      setPrivateKey(storedPrivateKey);
-      navigation.navigate('Tab');
-    }
-  };
-
   useFocusEffect( // 해당 페이지를 벗어날 경우 인풋 초기화
     React.useCallback(() => {
       return () => setInputKey('');
     }, [])
   );
-  
+
+  // useEffect(() => { // 자동 로그인
+  //   const checkAutoLogin = async () => {
+  //     const storedPrivateKey = await AsyncStorage.getItem('privateKey');
+  //     if (storedPrivateKey) {
+  //       setPrivateKey(storedPrivateKey);
+  //       navigation.navigate('Tab');
+  //     }
+  //   };
+  //   checkAutoLogin();
+  // }, []);
+
   useEffect(() => { // 해싱된 private key 확인
-    checkAutoLogin(); // 자동 로그인
+    // checkAutoLogin(); // 자동 로그인
     checkStoredKey(); // 해싱된 private key 확인
   }, []);
   
