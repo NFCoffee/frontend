@@ -33,6 +33,7 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [privateKey, setPrivateKey] = useState("");
   const [hashedPrivateKey, setHashedPrivateKey] = useState("");
+  const [userAdderess, setUserAddress] = useState("");
 
   const handleCertificationNumChange = (text: string) => {
     setCertificationNum(text);
@@ -51,82 +52,89 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
   const handleCertificationComplete = async () => {
     if (certificationNum.trim() === "") {
       Alert.alert("오류", "인증번호를 입력하세요");
-    } else {
-      try {
-        // const response = await fetch(`${URL}/api/v1/finish-sign`, {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //   },
-        //   body: JSON.stringify({
-        //     email,
-        //     employeeId,
-        //     code: certificationNum,
-        //   }),
-        // });
-
-        // if (response.ok) {
-        if (true) {
-          const web3 = new Web3(NETWORK);
-          const account = web3.eth.accounts.create();
-          const generatedPrivateKey = account.privateKey;
-          const salt = generateSalt(16);
-          const shuffledPrivateKey = combineAndShuffle(generatedPrivateKey, salt);
-          web3.eth.accounts.wallet.add(account);
-
-          setIsCertified(true);
-          setButtonDisabled(false);
-          setPrivateKey(generatedPrivateKey);
-          setHashedPrivateKey(shuffledPrivateKey);
-
-          // Save salt and shuffledPrivateKey to AsyncStorage for later use
-          await AsyncStorage.setItem('salt', salt);
-          await AsyncStorage.setItem('hashedPrivateKey', shuffledPrivateKey);
-
-          Alert.alert("인증 완료", "인증이 완료되었습니다!");
-
-          // const walletResponse = await fetch(`${URL}/api/v1/wallet`, {
-          //   method: 'POST',
-          //   headers: {
-          //     'Content-Type': 'application/json',
-          //   },
-          //   body: JSON.stringify({
-          //     email,
-          //     employeeId,
-          //     address: generatedAddress,
-          //   }),
-          // });
-
-          // if (walletResponse.ok) {
-          if (true) {
-            console.log(`hashedPrivateKey: ${shuffledPrivateKey}`);
-            console.log(`address: ${web3.eth.accounts.privateKeyToAccount(privateKey)}`);
-          } else {
-            console.error("Error saving to server");
-          }
+      return;
+    }
+  
+    let response;
+  
+    try {
+      // 인증 번호 확인 요청
+      response = await fetch(`${URL}/api/v1/finish-sign`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          employeeId,
+          code: certificationNum,
+        }),
+      });
+  
+      if (response.ok) {
+        const web3 = new Web3(NETWORK);
+        const account = web3.eth.accounts.create();
+        const generatedPrivateKey = account.privateKey;
+        const salt = generateSalt(16);
+        const shuffledPrivateKey = combineAndShuffle(generatedPrivateKey, salt);
+  
+        // 지갑에 계정 추가
+        web3.eth.accounts.wallet.add(account);
+  
+        setIsCertified(true);
+        setButtonDisabled(false);
+        setPrivateKey(generatedPrivateKey);
+        setHashedPrivateKey(shuffledPrivateKey);
+        const userAddress = web3.eth.accounts.privateKeyToAccount(generatedPrivateKey).address;
+  
+        // AsyncStorage에 salt와 shuffledPrivateKey 저장
+        await AsyncStorage.setItem('salt', salt);
+        await AsyncStorage.setItem('hashedPrivateKey', shuffledPrivateKey);
+  
+        Alert.alert("인증 완료", "인증이 완료되었습니다!");
+  
+        // 지갑 정보 서버에 저장
+        const walletResponse = await fetch(`${URL}/api/v1/wallet`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            employeeId,
+            address: userAddress,
+          }),
+        });
+  
+        if (walletResponse.ok) {
+          console.log(`hashedPrivateKey: ${shuffledPrivateKey}`);
+          console.log(`address: ${userAddress}`);
         } else {
-          Alert.alert("오류", "인증 실패. 다시 시도하세요.");
+          console.error("서버 저장 중 오류 발생");
         }
-      } catch (error) {
-        console.error(error);
-        Alert.alert("오류", "다시 시도하세요.");
+      } else {
+        Alert.alert("오류", "인증 실패. 다시 시도하세요.");
       }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("오류", "다시 시도하세요.");
     }
   };
+  
 
-  const handleResendCertificationNum = () => {
+  const handleResendCertificationNum = async () => {
     Alert.alert("알림", "인증번호가 재전송되었습니다.");
-              // const walletResponse = await fetch(`${URL}/api/v1/wallet`, {
-          //   method: 'POST',
-          //   headers: {
-          //     'Content-Type': 'application/json',
-          //   },
-          //   body: JSON.stringify({
-          //     email,
-          //     employeeId,
-          //     address: generatedAddress,
-          //   }),
-          // });
+    const walletResponse = await fetch(`${URL}/api/v1/wallet`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        employeeId,
+        address: userAdderess,
+      }),
+    });
   };
 
   const handleSignUpComplete = async () => {
