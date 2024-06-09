@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Dimensions, Text, TouchableOpacity, Image, Alert } from "react-native";
+import { StyleSheet, View, Dimensions, Text, TouchableOpacity, Alert } from "react-native";
 import BasicScreen from "../components/BasicScreen";
 import Button from "../components/Button";
 import { COLOR } from "../utils/color";
 import { URL } from "../const/url";
 import InputField from "../components/InputField";
 import { StackNavigationProp } from "@react-navigation/stack";
+import axios from 'axios';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -44,18 +45,18 @@ export default function MembershipScreen({ navigation }: MembershipScreenProps) 
     console.log("Employee ID:", employeeId);
 
     try {
-      const response = await fetch(`${URL}/api/v1/sign`, {
-        method: 'POST',
+      const response = await axios.post(`${URL}/api/v1/sign`, requestBody, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestBody),
       });
-      if(response.ok) {
+      if(response.status === 200) {
+        console.log(response);
         navigation.navigate("Certification", { email, employeeId });
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error(error);
+      //console.error('Error:', error.request._response);
     }
   };
 

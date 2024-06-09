@@ -27,10 +27,16 @@
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
-		<false/>
+		<true/>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>이 앱은 로컬 네트워크에 접근해야 합니다.</string>
+	<key>NSBonjourServices</key>
+	<array>
+	  <string>_http._tcp</string>
+	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string/>
 	<key>UILaunchStoryboardName</key>
