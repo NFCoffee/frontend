@@ -43,7 +43,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const { setPrivateKey } = usePrivateKey();
   const [inputKey, setInputKey] = useState<string>('');
   const [hasStoredKey, setHasStoredKey] = useState<boolean>(false); // 상태 추가
-  const web3 = new Web3(NETWORK);
+  const web3 = new Web3(new Web3.providers.HttpProvider(NETWORK));
 
   const checkStoredKey = async () => {
     const storedPrivateKey = await AsyncStorage.getItem('privateKey');

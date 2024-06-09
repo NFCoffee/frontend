@@ -9,6 +9,7 @@ import { RouteProp } from "@react-navigation/native";
 import { NETWORK, URL } from "../const/url";
 import { StackNavigationProp } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from 'axios';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -59,19 +60,17 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
   
     try {
       // 인증 번호 확인 요청
-      response = await fetch(`${URL}/api/v1/finish-sign`, {
-        method: 'POST',
+      response = await axios.post(`${URL}/api/v1/finish-sign`, {
+        email,
+        employeeId,
+        code: certificationNum,
+      }, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          email,
-          employeeId,
-          code: certificationNum,
-        }),
       });
   
-      if (response.ok) {
+      if (response.status === 200) {
         const web3 = new Web3(NETWORK);
         const account = web3.eth.accounts.create();
         const generatedPrivateKey = account.privateKey;
@@ -85,7 +84,7 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
         setButtonDisabled(false);
         setPrivateKey(generatedPrivateKey);
         setHashedPrivateKey(shuffledPrivateKey);
-        const userAddress = web3.eth.accounts.privateKeyToAccount(generatedPrivateKey).address;
+        setUserAddress(web3.eth.accounts.privateKeyToAccount(generatedPrivateKey).address)
   
         // AsyncStorage에 salt와 shuffledPrivateKey 저장
         await AsyncStorage.setItem('salt', salt);
@@ -93,20 +92,19 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
   
         Alert.alert("인증 완료", "인증이 완료되었습니다!");
   
+        console.log(email, employeeId, userAddress);
         // 지갑 정보 서버에 저장
-        const walletResponse = await fetch(`${URL}/api/v1/wallet`, {
-          method: 'POST',
+        const walletResponse = await axios.post(`${URL}/api/v1/wallet`, {
+          email,
+          employeeId,
+          address: userAddress,
+        }, {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            email,
-            employeeId,
-            address: userAddress,
-          }),
         });
   
-        if (walletResponse.ok) {
+        if (walletResponse.status === 200) {
           console.log(`hashedPrivateKey: ${shuffledPrivateKey}`);
           console.log(`address: ${userAddress}`);
         } else {
@@ -120,21 +118,26 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
       Alert.alert("오류", "다시 시도하세요.");
     }
   };
-  
 
   const handleResendCertificationNum = async () => {
     Alert.alert("알림", "인증번호가 재전송되었습니다.");
-    const walletResponse = await fetch(`${URL}/api/v1/wallet`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    try {
+      const response = await axios.post(`${URL}/api/v1/resend-code`, {
         email,
         employeeId,
-        address: userAdderess,
-      }),
-    });
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status !== 200) {
+        console.error("인증번호 재전송 중 오류 발생");
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("오류", "인증번호 재전송 중 오류 발생");
+    }
   };
 
   const handleSignUpComplete = async () => {
