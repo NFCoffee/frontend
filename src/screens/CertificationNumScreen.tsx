@@ -28,11 +28,9 @@ interface CertificationNumScreenProps {
 
 export default function CertificationNumScreen({ route, navigation }: CertificationNumScreenProps) {
   const { email, employeeId } = route.params;
-
   const [certificationNum, setCertificationNum] = useState("");
   const [isCertified, setIsCertified] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(true);
-  const [address, setAddress] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const [hashedPrivateKey, setHashedPrivateKey] = useState("");
 
@@ -72,13 +70,12 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
           const web3 = new Web3(NETWORK);
           const account = web3.eth.accounts.create();
           const generatedPrivateKey = account.privateKey;
-          const generatedAddress = account.address;
           const salt = generateSalt(16);
           const shuffledPrivateKey = combineAndShuffle(generatedPrivateKey, salt);
+          web3.eth.accounts.wallet.add(account);
 
           setIsCertified(true);
           setButtonDisabled(false);
-          setAddress(generatedAddress);
           setPrivateKey(generatedPrivateKey);
           setHashedPrivateKey(shuffledPrivateKey);
 
@@ -103,7 +100,7 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
           // if (walletResponse.ok) {
           if (true) {
             console.log(`hashedPrivateKey: ${shuffledPrivateKey}`);
-            console.log(`address: ${generatedAddress}`);
+            console.log(`address: ${web3.eth.accounts.privateKeyToAccount(privateKey)}`);
           } else {
             console.error("Error saving to server");
           }
@@ -119,11 +116,17 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
 
   const handleResendCertificationNum = () => {
     Alert.alert("알림", "인증번호가 재전송되었습니다.");
-    setIsCertified(false);
-    setButtonDisabled(true);
-    setPrivateKey("");
-    setAddress("");
-    setHashedPrivateKey("");
+              // const walletResponse = await fetch(`${URL}/api/v1/wallet`, {
+          //   method: 'POST',
+          //   headers: {
+          //     'Content-Type': 'application/json',
+          //   },
+          //   body: JSON.stringify({
+          //     email,
+          //     employeeId,
+          //     address: generatedAddress,
+          //   }),
+          // });
   };
 
   const handleSignUpComplete = async () => {
