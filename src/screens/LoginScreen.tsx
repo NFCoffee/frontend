@@ -45,31 +45,30 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const [hasStoredKey, setHasStoredKey] = useState<boolean>(false); // 상태 추가
   const web3 = new Web3(NETWORK);
 
+  const checkStoredKey = async () => {
+    const storedPrivateKey = await AsyncStorage.getItem('privateKey');
+    if (storedPrivateKey) {
+      setHasStoredKey(true);
+    }
+  };
+
+  const checkAutoLogin = async () => {
+    const storedPrivateKey = await AsyncStorage.getItem('privateKey');
+    if (storedPrivateKey) {
+      setPrivateKey(storedPrivateKey);
+      navigation.navigate('Tab');
+    }
+  };
+
   useFocusEffect( // 해당 페이지를 벗어날 경우 인풋 초기화
     React.useCallback(() => {
       return () => setInputKey('');
     }, [])
   );
-
-  useEffect(() => { // 자동 로그인
-    const checkAutoLogin = async () => {
-      const storedPrivateKey = await AsyncStorage.getItem('privateKey');
-      if (storedPrivateKey) {
-        setPrivateKey(storedPrivateKey);
-        navigation.navigate('Tab');
-      }
-    };
-    checkAutoLogin();
-  }, []);
-
+  
   useEffect(() => { // 해싱된 private key 확인
-    const checkStoredKey = async () => {
-      const storedPrivateKey = await AsyncStorage.getItem('privateKey');
-      if (storedPrivateKey) {
-        setHasStoredKey(true);
-      }
-    };
-    checkStoredKey();
+    checkAutoLogin(); // 자동 로그인
+    checkStoredKey(); // 해싱된 private key 확인
   }, []);
   
   const handleLogin = async () => {
@@ -79,7 +78,6 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
         try {
             // Private key 검증
             const account = web3.eth.accounts.privateKeyToAccount(inputKey);
-            web3.eth.accounts.wallet.add(account);
 
             // Private key를 context와 AsyncStorage에 저장
             setPrivateKey(inputKey);
@@ -100,7 +98,6 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             if (storedHashedPrivateKey) {
                 setPrivateKey(storedHashedPrivateKey);
                 await AsyncStorage.setItem('privateKey', storedHashedPrivateKey);
-                Alert.alert("성공", "PIN 번호로 로그인 성공");
                 navigation.navigate('Tab');
             } 
             else {
@@ -141,9 +138,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
         </View>
       </BasicScreen>
       <TouchableOpacity style={styles.bottomButton} onPress={handleLostkey}>
-        <Text style={styles.bottomButtonText}>
-          { "private key 분실신고" }
-        </Text>
+        <Text style={styles.bottomButtonText}>private key 분실신고</Text>
         <View style={styles.bottomButtonUnderline} />
       </TouchableOpacity>
     </>
