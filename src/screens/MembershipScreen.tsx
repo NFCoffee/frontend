@@ -43,19 +43,19 @@ export default function MembershipScreen({ navigation }: MembershipScreenProps) 
     console.log("Email:", email);
     console.log("Employee ID:", employeeId);
 
-    // try {
-    //   const response = await fetch(`${URL}/api/v1/sign`, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(requestBody),
-    //   });
-    //   const data = await response.json();
-    //   console.log('Success:', data);
-    // } catch (error) {
-    //   console.error('Error:', error);
-    // }
+    try {
+      const response = await fetch(`${URL}/api/v1/sign`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+      const data = await response.json();
+      console.log('Success:', data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
 
     navigation.navigate("Certification", { email, employeeId });
   };
