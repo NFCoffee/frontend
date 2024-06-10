@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Dimensions, Text, TouchableOpacity, Alert } from "react-native";
 import BasicScreen from "../components/BasicScreen";
 import Button from "../components/Button";
@@ -34,7 +34,22 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [privateKey, setPrivateKey] = useState("");
   const [hashedPrivateKey, setHashedPrivateKey] = useState("");
-  const [userAdderess, setUserAddress] = useState("");
+  const [userAddress, setUserAddress] = useState("");
+
+  useEffect(() => {
+    if (privateKey) {
+      console.log('privateKey', privateKey);
+      const address = new Web3(NETWORK).eth.accounts.privateKeyToAccount(privateKey).address;
+      setUserAddress(address);
+    }
+  }, [privateKey]);
+
+  useEffect(() => {
+    if (userAddress) {
+      console.log('userAddress', userAddress);
+      storeWalletInfo();
+    }
+  }, [userAddress]);
 
   const handleCertificationNumChange = (text: string) => {
     setCertificationNum(text);
@@ -56,11 +71,8 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
       return;
     }
   
-    let response;
-  
     try {
-      // 인증 번호 확인 요청
-      response = await axios.post(`${URL}/api/v1/finish-sign`, {
+      const response = await axios.post(`${URL}/api/v1/finish-sign`, {
         email,
         employeeId,
         code: certificationNum,
@@ -84,38 +96,45 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
         setButtonDisabled(false);
         setPrivateKey(generatedPrivateKey);
         setHashedPrivateKey(shuffledPrivateKey);
-        setUserAddress(web3.eth.accounts.privateKeyToAccount(generatedPrivateKey).address)
-  
+
         // AsyncStorage에 salt와 shuffledPrivateKey 저장
         await AsyncStorage.setItem('salt', salt);
         await AsyncStorage.setItem('hashedPrivateKey', shuffledPrivateKey);
   
         Alert.alert("인증 완료", "인증이 완료되었습니다!");
   
-        console.log(email, employeeId, userAddress);
-        // 지갑 정보 서버에 저장
-        const walletResponse = await axios.post(`${URL}/api/v1/wallet`, {
-          email,
-          employeeId,
-          address: userAddress,
-        }, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-  
-        if (walletResponse.status === 200) {
-          console.log(`hashedPrivateKey: ${shuffledPrivateKey}`);
-          console.log(`address: ${userAddress}`);
-        } else {
-          console.error("서버 저장 중 오류 발생");
-        }
+        console.log(email, employeeId, web3.eth.accounts.privateKeyToAccount(generatedPrivateKey).address);
       } else {
         Alert.alert("오류", "인증 실패. 다시 시도하세요.");
       }
     } catch (error) {
       console.error(error);
       Alert.alert("오류", "다시 시도하세요.");
+    }
+  };
+
+  const storeWalletInfo = async () => {
+    console.log('storeWalletInfo 호출', email, employeeId, userAddress);
+    try {
+      const response = await axios.post(`${URL}/api/v1/wallet`, {
+        email,
+        employeeId,
+        wallet: userAddress,
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.status === 200) {
+        console.log(`hashedPrivateKey: ${hashedPrivateKey}`);
+        console.log(`address: ${userAddress}`);
+      } else {
+        console.error("서버 저장 중 오류 발생");
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("오류", "지갑 정보를 저장하는 중 오류가 발생했습니다.");
     }
   };
 
