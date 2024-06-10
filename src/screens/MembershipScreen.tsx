@@ -69,8 +69,8 @@ export default function MembershipScreen({ navigation }: MembershipScreenProps) 
         <Text style={styles.mainText}>회원가입</Text>
       </View>
       <BasicScreen>
-        <InputField placeholder="e-mail 입력" defaultValue="" style={styles.inputField} onChangeText={handleEmailChange}/>
-        <InputField placeholder="사번 입력" defaultValue="" style={styles.inputField} onChangeText={handleEmployeeIdChange}/>
+        <InputField placeholder="e-mail 입력" defaultValue="" style={styles.inputField} onChangeText={handleEmailChange} autoCapitalize={'none'}/>
+        <InputField placeholder="사번 입력" defaultValue="" style={styles.inputField} onChangeText={handleEmployeeIdChange} autoCapitalize={'none'}/>
         <Button buttonText="인증번호 받기" style={styles.button} onPress={handleGetVerificationCode}></Button>
       </BasicScreen>
       </>

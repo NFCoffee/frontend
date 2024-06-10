@@ -9,13 +9,12 @@ import { StackNavigationProp } from "@react-navigation/stack";
 const windowHeight = Dimensions.get('window').height;
 
 type RootStackParamList = {
-    Login: undefined;
-    Signup: undefined;
-    Order: undefined;
     PinNum: { privateKey : string };
+    Privatekey: { privateKey: string };
+
 };
 
-type PinNumScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
+type PinNumScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Privatekey'>;
 type PinNumScreenRouteProp = RouteProp<RootStackParamList, 'PinNum'>;
 
 interface PinNumScreenProps {
@@ -45,7 +44,7 @@ const PinNumScreen: React.FC<PinNumScreenProps> = ({ route, navigation }) => {
                     AsyncStorage.setItem(pin, privateKey).then(() => {
                         Alert.alert("완료", "PIN과 해싱된 privateKey가 저장됨.");
                         pinView.current.clearAll();
-                        navigation.navigate('Login');
+                        navigation.navigate('Privatekey');
                     }).catch(error => {
                         Alert.alert("오류", "저장과정에서 오류 발생");
                     });
