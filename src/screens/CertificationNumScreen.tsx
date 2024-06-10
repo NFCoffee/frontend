@@ -36,21 +36,6 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
   const [hashedPrivateKey, setHashedPrivateKey] = useState("");
   const [userAddress, setUserAddress] = useState("");
 
-  useEffect(() => {
-    if (privateKey) {
-      console.log('privateKey', privateKey);
-      const address = new Web3(NETWORK).eth.accounts.privateKeyToAccount(privateKey).address;
-      setUserAddress(address);
-    }
-  }, [privateKey]);
-
-  useEffect(() => {
-    if (userAddress) {
-      console.log('userAddress', userAddress);
-      storeWalletInfo();
-    }
-  }, [userAddress]);
-
   const handleCertificationNumChange = (text: string) => {
     setCertificationNum(text);
     setButtonDisabled(text.trim() === "");

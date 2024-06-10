@@ -135,6 +135,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             defaultValue={inputKey} 
             style={styles.inputField} 
             onChangeText={setInputKey}
+            autoCapitalize={'none'}
           />
           <Button buttonText="로그인" style={styles.button} onPress={handleLogin}/>
           <Button buttonText="회원가입" style={styles.button} onPress={handleSignup}/>
