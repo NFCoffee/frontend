@@ -1,28 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { StyleSheet, View, Text, SafeAreaView, ScrollView } from "react-native";
 import { COLOR } from "../utils/color";
 import Block from "../components/Block";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { usePrivateKey } from "../context/PrivateKeyContext";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function TransactionScreen() {
   const { privateKey } = usePrivateKey();
   const [transactionHistory, setTransactionHistory] = useState([]);
 
-  useEffect(() => {
-    const loadTransactionHistory = async () => {
-      try {
-        const history = await AsyncStorage.getItem(`transactionHistory_${privateKey}`);
-        if (history) {
-          setTransactionHistory(JSON.parse(history).reverse());
-        }
-      } catch (error) {
-        console.error('Error loading transaction history:', error);
+  const loadTransactionHistory = async () => {
+    try {
+      const history = await AsyncStorage.getItem(`transactionHistory_${privateKey}`);
+      if (history) {
+        setTransactionHistory(JSON.parse(history).reverse());
       }
-    };
+    } catch (error) {
+      console.error('Error loading transaction history:', error);
+    }
+  };
 
-    loadTransactionHistory();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadTransactionHistory();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
