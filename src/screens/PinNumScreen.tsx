@@ -44,7 +44,7 @@ const PinNumScreen: React.FC<PinNumScreenProps> = ({ route, navigation }) => {
                     AsyncStorage.setItem(pin, privateKey).then(() => {
                         Alert.alert("완료", "PIN과 해싱된 privateKey가 저장됨.");
                         pinView.current.clearAll();
-                        navigation.navigate('Privatekey');
+                        navigation.navigate('Privatekey', {privateKey});
                     }).catch(error => {
                         Alert.alert("오류", "저장과정에서 오류 발생");
                     });

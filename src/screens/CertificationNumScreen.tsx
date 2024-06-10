@@ -36,6 +36,21 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
   const [hashedPrivateKey, setHashedPrivateKey] = useState("");
   const [userAddress, setUserAddress] = useState("");
 
+  useEffect(() => {
+    if (privateKey) {
+      console.log('privateKey', privateKey);
+      const address = new Web3(NETWORK).eth.accounts.privateKeyToAccount(privateKey).address;
+      setUserAddress(address);
+    }
+  }, [privateKey]);
+
+  useEffect(() => {
+    if (userAddress) {
+      console.log('userAddress', userAddress);
+      storeWalletInfo();
+    }
+  }, [userAddress]);
+
   const handleCertificationNumChange = (text: string) => {
     setCertificationNum(text);
     setButtonDisabled(text.trim() === "");
@@ -124,7 +139,7 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
   };
 
   const handleResendCertificationNum = async () => {
-    Alert.alert("알림", "인증번호가 재전송되었습니다.");
+    
     try {
       const response = await axios.post(`${URL}/api/v1/resend-code`, {
         email,
@@ -137,6 +152,8 @@ export default function CertificationNumScreen({ route, navigation }: Certificat
 
       if (response.status !== 200) {
         console.error("인증번호 재전송 중 오류 발생");
+      } else {
+        Alert.alert("알림", "인증번호가 재전송되었습니다.");
       }
     } catch (error) {
       console.error(error);
